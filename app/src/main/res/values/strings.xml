@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">سبعين مرة</string>
+    <string name="MorningZekr">أذكار الصباح</string>
+    <string name="NightZekr">أذكار المساء</string>
+    <string name="AfterPrey">أذكار بعد السلام من الصلاة المفروضة</string>
+    <string name="Tsabeeh">تسابيح</string>
+    <string name="SleepingZekr">أذكار النوم</string>
+    <string name="AwakeZekr">أذكار الاستيقاظ</string>
+    <string name="QuranPrey">أدعية قرآنية</string>
+    <string name="ProphetsPrey">أدعية الأنبياء</string>
 </resources>
