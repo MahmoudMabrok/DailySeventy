@@ -5,6 +5,8 @@ plugins {
     kotlin("plugin.serialization") version "1.5.31"
     id("kotlin-kapt")
     id ("dagger.hilt.android.plugin")
+    id("com.google.devtools.ksp")
+
 
 }
 
@@ -103,5 +105,17 @@ dependencies {
 
     // Navigation
     implementation ("androidx.navigation:navigation-compose:2.7.5")
+
+    //fonts
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.5.3")
+
+    //Desugaring
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    //compose destination
+    val destinationVersion = "1.9.52"
+    implementation("io.github.raamcosta.compose-destinations:core:$destinationVersion")
+    ksp("io.github.raamcosta.compose-destinations:ksp:$destinationVersion")
+
+
 
 }
