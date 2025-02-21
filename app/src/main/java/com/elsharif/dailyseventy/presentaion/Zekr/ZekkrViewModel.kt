@@ -15,8 +15,14 @@ class ZekkrViewModel @Inject constructor(
     private val zekrRepository: ZekrRepository
 ) : ViewModel() {
 
+    val categories = listOf("أذكار الصباح", "أذكار المساء", "أذكار بعد السلام من الصلاة المفروضة",
+        "تسابيح" ,"أذكار النوم" ,"أذكار الاستيقاظ" ,"أدعية قرآنية" ,"أدعية الأنبياء")
+
     private val _state = MutableStateFlow(ZekkrState()) // Holds UI state
     val state: StateFlow<ZekkrState> = _state.asStateFlow()
+
+    private val _count =MutableStateFlow(0)
+    var count :StateFlow<Int> =_count.asStateFlow()
 
     init {
         loadAzkaar() // Load data on initialization
@@ -27,6 +33,7 @@ class ZekkrViewModel @Inject constructor(
         when (event) {
             is ZekkrEvent.SelectCategory -> selectCategory(event.category)
             ZekkrEvent.LoadAzkaar -> loadAzkaar()
+            is ZekkrEvent.IncreaseCount -> increaseCount(event.zekrCount)
         }
     }
 
@@ -52,5 +59,8 @@ class ZekkrViewModel @Inject constructor(
                 )
             }
         }
+    }
+    private fun increaseCount(zekrCount: Int) {
+        _count.value += zekrCount
     }
 }

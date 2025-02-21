@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.elsharif.dailyseventy.presentaion.zekr.ZekkrScreen
 import com.elsharif.dailyseventy.ui.theme.DailySeventyTheme
 
 
@@ -13,8 +14,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DailySeventyTheme {
-
-
+             ZekkrScreen()
             }
         }
     }
