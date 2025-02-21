@@ -117,5 +117,10 @@ dependencies {
     ksp("io.github.raamcosta.compose-destinations:ksp:$destinationVersion")
 
 
+    // SnackbarEvent
+    implementation(platform("androidx.compose:compose-bom:2025.01.01"))
+
+
+
 
 }
