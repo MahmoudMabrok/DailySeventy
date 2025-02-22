@@ -69,13 +69,13 @@ fun CountCard(
                  onClick()
                 }
             ) {
-            CircularProgressIndicator(
-                progress = count.toFloat() /(zekkr.count).toFloat() ,
-                color = Color(0xffEF2679),
-                modifier = Modifier.size(100.dp),
-                trackColor = Color(0xFFFFFFFF),
-                strokeWidth = 4.dp
-            )
+                CircularProgressIndicator(
+                    progress = { count.toFloat() /(zekkr.count).toFloat() },
+                    modifier = Modifier.size(100.dp),
+                    color = Color(0xffEF2679),
+                    strokeWidth = 4.dp,
+                    trackColor = Color(0xFFFFFFFF),
+                )
              }
             }
 

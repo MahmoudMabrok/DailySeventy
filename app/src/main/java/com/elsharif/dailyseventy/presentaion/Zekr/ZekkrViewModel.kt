@@ -1,10 +1,8 @@
-package com.elsharif.dailyseventy.presentation.zekr
+package com.elsharif.dailyseventy.presentaion.zekr
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elsharif.dailyseventy.domain.repository.ZekrRepository
-import com.elsharif.dailyseventy.presentaion.zekr.ZekkrEvent
-import com.elsharif.dailyseventy.presentaion.zekr.ZekkrState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

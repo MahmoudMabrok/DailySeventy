@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.elsharif.dailyseventy.core.presentationSensor
 
 import android.annotation.SuppressLint

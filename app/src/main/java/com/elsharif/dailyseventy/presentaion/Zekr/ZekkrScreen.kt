@@ -7,32 +7,30 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.elsharif.dailyseventy.presentaion.components.CountCard
-import com.elsharif.dailyseventy.presentation.zekr.ZekkrViewModel
 
 @Composable
 fun ZekkrScreen(
-    navController:NavController,
-    category:String
+   //navController:NavController,
+  //  category:String
 ) {
 
-    val viewModel:ZekkrViewModel = hiltViewModel()
+    val viewModel: ZekkrViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val count by viewModel.count.collectAsStateWithLifecycle()
 
 
+/*
     LaunchedEffect(category) {
         viewModel.onEvent(ZekkrEvent.SelectCategory(category)) // ✅ Fetch azkaar for category
     }
+*/
 
     Scaffold(
         //snackbarHost = { SnackbarHost(hostState = snackbarHostState) },

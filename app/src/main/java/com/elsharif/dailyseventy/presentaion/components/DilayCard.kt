@@ -70,11 +70,11 @@ fun DailyCard(
                 }
             ) {
                 CircularProgressIndicator(
-                    progress = count.toFloat() /(count+100).toFloat() ,
-                    color = Color(0xffEF2679),
+                    progress = { count.toFloat() /(count+100).toFloat() },
                     modifier = Modifier.size(150.dp),
+                    color = Color(0xffEF2679),
+                    strokeWidth = 4.dp,
                     trackColor = Color(0xFFFFFFFF),
-                    strokeWidth = 4.dp
                 )
             }
         }
