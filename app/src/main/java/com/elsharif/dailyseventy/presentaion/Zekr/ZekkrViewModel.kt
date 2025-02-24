@@ -13,12 +13,11 @@ class ZekkrViewModel @Inject constructor(
     private val zekrRepository: ZekrRepository
 ) : ViewModel() {
 
-
     private val _state = MutableStateFlow(ZekkrState()) // Holds UI state
     val state: StateFlow<ZekkrState> = _state.asStateFlow()
 
-    private val _count =MutableStateFlow(0)
-    var count :StateFlow<Int> =_count.asStateFlow()
+    private val _count = MutableStateFlow(0)
+    val count: StateFlow<Int> = _count.asStateFlow()
 
     init {
         loadAzkaar() // Load data on initialization
@@ -56,7 +55,8 @@ class ZekkrViewModel @Inject constructor(
             }
         }
     }
+
     private fun increaseCount(zekrCount: Int) {
-        _count.value += zekrCount
+        _count.update { it + zekrCount }
     }
 }

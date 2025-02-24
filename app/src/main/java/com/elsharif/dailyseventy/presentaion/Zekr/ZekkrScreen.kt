@@ -9,16 +9,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.elsharif.dailyseventy.presentaion.components.CountCard
 
 @Composable
 fun ZekkrScreen(
-   //navController:NavController,
-  //  category:String
+    navController: NavController,
+    category:String
 ) {
 
     val viewModel: ZekkrViewModel = hiltViewModel()
@@ -26,11 +28,11 @@ fun ZekkrScreen(
     val count by viewModel.count.collectAsStateWithLifecycle()
 
 
-/*
+
     LaunchedEffect(category) {
         viewModel.onEvent(ZekkrEvent.SelectCategory(category)) // ✅ Fetch azkaar for category
     }
-*/
+
 
     Scaffold(
         //snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -47,7 +49,7 @@ fun ZekkrScreen(
                 CountCard(
                     zekkr = zekr,
                     count = count,  // Display count from ViewModel
-                    onClick = { viewModel.onEvent(ZekkrEvent.IncreaseCount(zekr.count))}
+                    onClick = { viewModel.onEvent(ZekkrEvent.IncreaseCount(zekr.count.toInt()))}
                 ) // Display each item
             }
 
