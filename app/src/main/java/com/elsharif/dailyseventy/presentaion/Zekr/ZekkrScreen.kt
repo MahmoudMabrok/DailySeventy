@@ -48,9 +48,7 @@ fun ZekkrScreen(
                 val zekr = state.azkaar[index]
                 CountCard(
                     zekkr = zekr,
-                    count = count,  // Display count from ViewModel
-                    onClick = { viewModel.onEvent(ZekkrEvent.IncreaseCount(zekr.count.toInt()))}
-                ) // Display each item
+                )
             }
 
 
@@ -64,7 +62,7 @@ private fun DashboardScreenTopBar () {
 
     CenterAlignedTopAppBar(
         title = {
-            Text(text = "Mind Crafted", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "سبعون مرة", style = MaterialTheme.typography.headlineMedium)
         }
     )
 

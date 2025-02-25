@@ -1,5 +1,6 @@
 package com.elsharif.dailyseventy.presentaion.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,13 +17,20 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elsharif.dailyseventy.domain.model.Zakker
+import com.elsharif.dailyseventy.presentaion.zekr.ZekkrViewModel
 import com.elsharif.dailyseventy.ui.theme.RadiusContainer
 
 
@@ -30,15 +38,19 @@ import com.elsharif.dailyseventy.ui.theme.RadiusContainer
 fun CountCard(
      modifier: Modifier=Modifier,
      zekkr:Zakker,
-     count:Int,
-     onClick:()->Unit
 ) {
 
+    var localCount by remember { mutableStateOf(0) }
+    var count by remember { mutableStateOf(zekkr.count.toInt()) }
+    val defaultColor = MaterialTheme.colorScheme.secondaryContainer
+    var dominantColor by remember {
+        mutableStateOf(defaultColor)
+    }
 
 
     Box(
         modifier = modifier.padding(
-            bottom = 16.dp,
+            bottom = 8.dp,
             start = 8.dp,
             end = 8.dp
         )
@@ -47,39 +59,93 @@ fun CountCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 12.dp)
-                .clip(RoundedCornerShape(RadiusContainer.dp)),
+                .padding(horizontal = 12.dp, vertical = 12.dp)
+                .clip(RoundedCornerShape(RadiusContainer.dp))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            dominantColor
+                        )
+                    )
+                ).clickable {
+                    if (count > 0) {  // Prevent negative values
+                        count -= 1
+                    }
+                    localCount+=1
+                },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                modifier = Modifier.padding(12.dp),
+                text = zekkr.content,
+                style = MaterialTheme.typography.bodyLarge,
+           //     maxLines = 5
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            if(zekkr.description.isNotBlank()){
+                Text(
+                    modifier = Modifier.padding(12.dp),
+                    //   maxLines = 2,
+                    text = zekkr.description,   // Remove single quotes,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+            }
+
+            if(zekkr.reference.isNotBlank()){
+                Text(
+                    modifier = Modifier.padding(12.dp),
+                    maxLines = 2,
+                    text = zekkr.reference,
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+            }
 
             Box(
                 modifier = Modifier
-                    .height(240.dp)
-                    .fillMaxSize()
-                    .padding(6.dp)
+                    .size(40.dp).padding(4.dp), // Set a fixed size for alignment
+                contentAlignment = Alignment.Center // Center the content inside
             ) {
-
-            Text(text = zekkr.content, style = MaterialTheme.typography.labelSmall)
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(text =zekkr.description, style = MaterialTheme.typography.bodySmall.copy(fontSize = 30.sp))
-
-            IconButton(
-                onClick = {
-                 onClick()
-                }
-            ) {
+                // Circular Progress Indicator
                 CircularProgressIndicator(
-                    progress = { count.toFloat() /(zekkr.count).toFloat() },
-                    modifier = Modifier.size(100.dp),
-                    color = Color(0xffEF2679),
+                    progress = { localCount.toFloat() / zekkr.count.toFloat() },
+                    modifier = Modifier.size(40.dp),
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     strokeWidth = 4.dp,
-                    trackColor = Color(0xFFFFFFFF),
+                    trackColor = MaterialTheme.colorScheme.inverseOnSurface,
                 )
-             }
-            }
 
+                // Number of remaining counts inside the progress indicator
+                Text(
+                    text = "$count",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+                    color = Color.Black
+                )
+
+                // Clickable IconButton to decrement count
+                IconButton(
+                    onClick = {
+                        if (count > 0) {  // Prevent negative values
+                            count -= 1
+                        }
+                        localCount+=1
+                    },
+                    modifier = Modifier.size(35.dp) // Ensure it matches the progress size
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) // Empty box to handle click inside the circle
+                }
+            }
         }
+
 
     }
 }
