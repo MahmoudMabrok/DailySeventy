@@ -1,6 +1,7 @@
 package com.elsharif.dailyseventy
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -10,10 +11,12 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.FloatingActionButton
@@ -30,6 +33,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.elsharif.dailyseventy.presentaion.home.AppNavHost
+import com.elsharif.dailyseventy.presentaion.home.CategoryScreen
 
 data class BottomNavigationItem(
     val title:String,
@@ -38,34 +45,36 @@ data class BottomNavigationItem(
     val hasNews:Boolean,
     val badgeCount:Int?=null
 )
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun BottomNavigationBarWithBadges() {
+fun UnifiedNavigationScaffold() {
+    val navController = rememberNavController()
 
     var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
 
     val list = listOf(
         BottomNavigationItem(
-            title = "Home",
+            title = "الرئيسية",
             selectedIcon =Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home,
             hasNews = false
         ),
         BottomNavigationItem(
-            title = "Chat",
-            selectedIcon =Icons.Filled.Email,
-            unselectedIcon = Icons.Outlined.Email,
+            title = "اذكار_الصباح",
+            selectedIcon =Icons.Filled.WbSunny,
+            unselectedIcon = Icons.Outlined.WbSunny,
             hasNews = false,
             badgeCount = 44
         ),
         BottomNavigationItem(
-            title = "Notifications",
+            title = "تفاصيل",
             selectedIcon =Icons.Filled.Notifications,
             unselectedIcon = Icons.Outlined.Notifications,
             hasNews = false,
             badgeCount = 12
         ),
         BottomNavigationItem(
-            title = "Settings",
+            title = "تفاصيل",
             selectedIcon =Icons.Filled.Settings,
             unselectedIcon = Icons.Outlined.Settings,
             hasNews = true
@@ -73,7 +82,8 @@ fun BottomNavigationBarWithBadges() {
     )
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+        ,
         bottomBar = {
             NavigationBar {
                 list.forEachIndexed { index, item ->
@@ -83,7 +93,7 @@ fun BottomNavigationBarWithBadges() {
                             selectedItemIndex = index
                             // if we need to navigate to another screen
 
-                            //navController.navigate(item.title)
+                            navController.navigate(item.title)
                         },
                         icon = {
                             BadgedBox(
@@ -114,6 +124,10 @@ fun BottomNavigationBarWithBadges() {
                 }
             }
         }
-    ){}
+    ){
+
+      AppNavHost(navController)
+
+    }
 
 }

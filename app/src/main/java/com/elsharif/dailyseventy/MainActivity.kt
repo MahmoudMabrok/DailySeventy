@@ -17,8 +17,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DailySeventyTheme {
-                val navController = rememberNavController()
-                AppNavHost(navController = navController) // ✅ Use NavHost
+
+                UnifiedNavigationScaffold()
             }
         }
     }

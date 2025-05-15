@@ -1,17 +1,25 @@
 package com.elsharif.dailyseventy.presentaion.home
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,16 +27,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.elsharif.dailyseventy.R
 import com.elsharif.dailyseventy.ui.theme.SmallRadius
 import com.elsharif.dailyseventy.ui.theme.ubuntuFontFamily
+import com.elsharif.dailyseventy.util.CurvedScrollView
 import com.elsharif.dailyseventy.util.header
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CategoryScreen(navController: NavController) {
 
@@ -37,9 +52,11 @@ fun CategoryScreen(navController: NavController) {
 
     Scaffold(
         topBar = { DashboardScreenTopBar() }
-    ) { paddingValues ->
+    ) { //paddingValues ->
 
-        Box(
+        CurvedScroll(navController)
+
+        /*Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -65,7 +82,7 @@ fun CategoryScreen(navController: NavController) {
                                     horizontal = 22.dp
                                 ),
                             textAlign = TextAlign.Center,
-                            text = "",
+                            text = "اختر نوع الذكر ",
                             color = MaterialTheme.colorScheme.onBackground,
                             fontFamily =ubuntuFontFamily ,
                             fontSize = 20.sp
@@ -96,7 +113,8 @@ fun CategoryScreen(navController: NavController) {
 
             }
 
-        }
+        }*/
+
 
 /*
         Column(
@@ -134,4 +152,107 @@ private fun DashboardScreenTopBar () {
     )
 
 
+}
+@Composable
+fun CurvedScroll(navController: NavController) {
+
+    val categories = listOf("أذكار الصباح", "أذكار المساء", "أذكار بعد السلام من الصلاة المفروضة",
+        "تسابيح" ,"أذكار النوم" ,"أذكار الاستيقاظ" ,"أدعية قرآنية" ,"أدعية الأنبياء")
+
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Curved Scrollview",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 10.dp, end = 10.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            CurvedScrollView(categories.size) { category ->
+                Column(
+                    modifier = Modifier.wrapContentSize()
+                ) {
+                    /*Image(
+                        painter = painterResource(
+                            id =
+                                when (index) {
+                                    0 -> R.drawable.doaa
+                                    1 -> R.drawable.pray
+                                    2 -> R.drawable.pray
+                                    3 -> R.drawable.pray
+                                    4 -> R.drawable.doaa
+                                    5 -> R.drawable.doaa
+                                    6 -> R.drawable.doaa
+                                    7 -> R.drawable.pray
+                                    8 -> R.drawable.pray
+                                    else -> R.drawable.pray
+                                }
+                        ),
+                        contentDescription = "Curved Image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(70.dp)
+                            .clip(CircleShape)
+                    )
+
+                    Spacer(modifier = Modifier.padding(5.dp))
+
+                    Text(
+                        text = items[index],
+                        style = MaterialTheme.typography.bodySmall
+                    )*/
+
+                    Button(
+                        onClick = {
+                            navController.navigate("zekkr_screen/${categories[category]}") // ✅ Navigate with category
+                        },
+                        modifier = Modifier
+                            .width(120.dp)
+                            .size(100.dp)
+                            .padding(6.dp)
+                    ) {
+
+                        Text(
+                            text = categories[category],
+                            modifier = Modifier.fillMaxWidth(), // Make the text span full width
+                            textAlign = TextAlign.Center,       // Center-align the text
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+
+                    }
+
+
+                }
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.doaa),
+                contentDescription = "Curved Logo Image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(150.dp)
+                    .clip(RoundedCornerShape(20.dp))
+            )
+        }
+    }
 }

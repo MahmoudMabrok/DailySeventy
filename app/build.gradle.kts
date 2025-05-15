@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "com.elsharif.dailyseventy"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.elsharif.dailyseventy"
@@ -77,20 +77,20 @@ dependencies {
     kapt("androidx.room:room-compiler:$roomVersion")
 
     // Navigation
-    implementation ("androidx.navigation:navigation-compose:2.7.5")
+    implementation ("androidx.navigation:navigation-compose:2.9.0")
 
     // Extended Icons
-    implementation("androidx.compose.material:material-icons-extended:1.5.4")
-    implementation("androidx.compose.material3:material3:1.0.0-alpha03")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("androidx.compose.material3:material3:1.3.2")
 
     implementation ("io.coil-kt:coil-compose:1.4.0")
 
-    // OpenStreetMap (OSM)
 
+    // OpenStreetMap (OSM)
     implementation ("org.osmdroid:osmdroid-android:6.1.16")
 
 
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0")
 
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-android-compiler:2.50")
@@ -100,17 +100,17 @@ dependencies {
 //    implementation ("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     kapt ("androidx.hilt:hilt-compiler:1.2.0")
 
-    implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation ("androidx.appcompat:appcompat:1.7.0")
 
 
     // Navigation
-    implementation ("androidx.navigation:navigation-compose:2.7.5")
+    implementation ("androidx.navigation:navigation-compose:2.9.0")
 
     //fonts
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.5.3")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.1")
 
     //Desugaring
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
 /*
     //compose destination
@@ -121,7 +121,12 @@ dependencies {
 
 
     // SnackbarEvent
-    implementation(platform("androidx.compose:compose-bom:2025.01.01"))
+    implementation(platform("androidx.compose:compose-bom:2025.05.00"))
+
+
+    //Curved-Scroll
+    //noinspection UseTomlInstead
+    implementation ("com.github.mohamedtamer0:Compose-Curved-Scroll-library:1.0")
 
 
 
