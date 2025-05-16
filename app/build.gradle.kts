@@ -131,4 +131,14 @@ dependencies {
 
 
 
+
+    //For Work Manager
+    implementation (libs.play.services.location)
+
+
+    //For Widgets
+
+    implementation ("androidx.glance:glance:1.0.0-alpha05")
+    implementation ("androidx.glance:glance-appwidget:1.0.0-alpha05")
+
 }

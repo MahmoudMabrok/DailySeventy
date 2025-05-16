@@ -2,6 +2,7 @@ package com.elsharif.dailyseventy
 
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -27,17 +28,26 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.elsharif.dailyseventy.presentaion.home.AppNavHost
 import com.elsharif.dailyseventy.presentaion.home.CategoryScreen
+import com.elsharif.dailyseventy.util.Screen
 
+
+
+/*
+* أضيف صورة وانيميشن للwidget
+* */
 data class BottomNavigationItem(
     val title:String,
     val selectedIcon:ImageVector,
@@ -48,9 +58,27 @@ data class BottomNavigationItem(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UnifiedNavigationScaffold() {
+
+
     val navController = rememberNavController()
 
     var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+
+    val mainScreens = listOf(
+        Screen.Home.route,
+        Screen.Morning.route,
+        Screen.Details.route
+    )
+    var currentRoute by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+            currentRoute = backStackEntry.destination.route
+        }
+    }
+    val shouldShowBottomBar = currentRoute in mainScreens
+
+    val navBarColor = Color(0xFF294878) // Dark golden brown
 
     val list = listOf(
         BottomNavigationItem(
@@ -83,16 +111,20 @@ fun UnifiedNavigationScaffold() {
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
-        ,
+            .background(navBarColor),
+
         bottomBar = {
-            NavigationBar {
+          if(shouldShowBottomBar)
+            NavigationBar(
+                containerColor = navBarColor
+
+            ) {
                 list.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = selectedItemIndex == index,
                         onClick = {
                             selectedItemIndex = index
                             // if we need to navigate to another screen
-
                             navController.navigate(item.title)
                         },
                         icon = {
@@ -111,7 +143,9 @@ fun UnifiedNavigationScaffold() {
                                     imageVector =
                                     if (index == selectedItemIndex) item.selectedIcon
                                     else item.unselectedIcon,
-                                    contentDescription = item.title
+                                    contentDescription = item.title,
+                                //    modifier = Modifier.background(Color(0xFFD8C4A0)),
+                                    tint = Color(0xFFD8C4A0)
                                 )
                             }
                         },

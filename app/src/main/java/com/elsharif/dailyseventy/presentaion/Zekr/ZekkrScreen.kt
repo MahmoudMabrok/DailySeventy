@@ -8,10 +8,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -22,6 +24,14 @@ fun ZekkrScreen(
     navController: NavController,
     category:String
 ) {
+
+    /*
+    * عايز أضيف إمكانية الشير للنص
+    * عايز أغير لون التيكست التاني
+    * عايز أغير باك جراوند الصفجة الرئيسية
+    *
+    * */
+
 
     val viewModel: ZekkrViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -62,8 +72,15 @@ private fun DashboardScreenTopBar () {
 
     CenterAlignedTopAppBar(
         title = {
-            Text(text = "سبعون مرة", style = MaterialTheme.typography.headlineMedium)
-        }
+            Text(
+                text = "سبعون مرة",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White // Optional: change text color
+            )
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color(0xFF294878) // Example: dark golden brown
+        )
     )
 
 }
