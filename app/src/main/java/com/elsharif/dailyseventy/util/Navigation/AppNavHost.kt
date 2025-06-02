@@ -1,5 +1,8 @@
 package com.elsharif.dailyseventy.util.Navigation
 
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,14 +11,16 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.elsharif.dailyseventy.presentaion.Qibla.QiblaScreen
 import com.elsharif.dailyseventy.presentaion.components.HijriCalendar
 import com.elsharif.dailyseventy.presentaion.home.CategoryScreen
 import com.elsharif.dailyseventy.presentaion.zekr.ZekkrScreen
 import com.elsharif.dailyseventy.util.Screen
 import java.time.chrono.HijrahDate
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavHost(navController: NavHostController) {
+fun AppNavHost(navController: NavHostController,context: Context) {
 
     NavHost(navController, startDestination = "الرئيسية") {
         composable(Screen.Home.route) {
@@ -34,6 +39,11 @@ fun AppNavHost(navController: NavHostController) {
             HijriCalendar(hijrahDate) {
                 hijrahDate = it
             }
+        }
+        composable(Screen.Qible.route) {
+          //
+            QiblaScreen()
+
         }
 
     }

@@ -143,5 +143,38 @@ dependencies {
 
 
 
+    // retrofit
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.0")
+    implementation ("com.squareup.retrofit2:converter-scalars:2.9.0")
+
+/*
+
+// Dimension Support
+    implementation("com.intuit.sdp:sdp-android:1.0.6")
+
+// Location Services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+// Localization
+    implementation("com.akexorcist:localization:1.2.11")
+
+// Hijri Calendar View
+    implementation("com.github.eltohamy:material-hijri-calendarview:1.1.2")
+
+// Umm al-Qura Calendar
+    implementation("com.github.msarhan:ummalqura-calendar:1.1.9")
+
+// Time4J for Android
+    implementation("net.time4j:time4j-android:4.8-2021a")
+
+*/
+
+
+    implementation("net.time4j:time4j-android:4.8-2021a")
+
+
 
 }

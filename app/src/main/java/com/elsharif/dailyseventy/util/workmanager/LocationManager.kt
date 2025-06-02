@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 
-@SuppressLint("MissingPermission")
+@SuppressLint("MissingPermission") // Make sure to handle permission before calling
 class LocationManager(
     context: Context
 ) {
@@ -21,58 +21,46 @@ class LocationManager(
     private val fusedLocationClient =
         LocationServices.getFusedLocationProviderClient(context)
 
+    // Get the last known location once
     fun getLocation(
-        onSuccess: (
-            latitude: String, longitude: String
-        ) -> Unit
+        onSuccess: (latitude: String, longitude: String) -> Unit
     ) {
         fusedLocationClient
             .lastLocation
             .addOnSuccessListener { location ->
-                val latitude = location.latitude.toString().takeLast(4)
-                val longitude = location.longitude.toString().takeLast(4)
+                location?.let {
+                    val latitude = it.latitude.toString()
+                    val longitude = it.longitude.toString()
 
-                onSuccess(latitude, longitude)
-            }
-    }
-
-    fun trackLocation(): Flow<Location> {
-        return callbackFlow {
-            val locationCallback = locationCallback { location ->
-                launch {
-                    send(location)
+                    onSuccess(latitude, longitude)
                 }
             }
-
-            val request = LocationRequest
-                .Builder(1000)
-                .build()
-
-            fusedLocationClient.requestLocationUpdates(
-                request,
-                locationCallback,
-                Looper.getMainLooper()
-            )
-
-            awaitClose {
-                fusedLocationClient.removeLocationUpdates(locationCallback)
-            }
-
-        }
     }
 
-    private fun locationCallback(
-        onResult: (location: Location) -> Unit
-    ): LocationCallback {
-
-        return object : LocationCallback() {
+    // Track location continuously as a Flow<Location>
+    fun trackLocation(): Flow<Location> = callbackFlow {
+        val locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 super.onLocationResult(result)
                 result.locations.lastOrNull()?.let { location ->
-                    onResult(location)
+                    launch {
+                        send(location)
+                    }
                 }
             }
         }
-    }
 
+        val request = LocationRequest.Builder(1000) // Update every 1 second
+            .build()
+
+        fusedLocationClient.requestLocationUpdates(
+            request,
+            locationCallback,
+            Looper.getMainLooper()
+        )
+
+        awaitClose {
+            fusedLocationClient.removeLocationUpdates(locationCallback)
+        }
+    }
 }

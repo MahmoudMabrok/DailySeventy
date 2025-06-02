@@ -11,8 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-
 
 class LocationTrackerService : Service() {
 
@@ -20,56 +20,46 @@ class LocationTrackerService : Service() {
         SupervisorJob() + Dispatchers.IO
     )
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
-
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(
         intent: Intent?, flags: Int, startId: Int
     ): Int {
-
         when (intent?.action) {
-            Action.START.name -> start()
-            Action.STOP.name -> stop()
+            Action.START.name -> startTracking()
+            Action.STOP.name -> stopTracking()
         }
-
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun start() {
-
+    private fun startTracking() {
         val locationManager = LocationManager(applicationContext)
-
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notification = NotificationCompat
-            .Builder(this, LOCATION_CHANNEL)
+        val notificationBuilder = NotificationCompat.Builder(this, LOCATION_CHANNEL)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Location Tracker")
             .setStyle(NotificationCompat.BigTextStyle())
 
-        startForeground(1, notification.build())
+        startForeground(1, notificationBuilder.build())
 
         scope.launch {
             locationManager.trackLocation().collect { location ->
-                val latitude = location.latitude.toString().takeLast(4)
-                val longitude = location.longitude.toString().takeLast(4)
+                val latitude = location.latitude.toString()
+                val longitude = location.longitude.toString()
 
                 notificationManager.notify(
                     1,
-                    notification.setContentText(
-                        "Location: ..$latitude / ..$longitude"
-                    ).build()
+                    notificationBuilder
+                        .setContentText("Location: $latitude / $longitude")
+                        .build()
                 )
-
             }
         }
-
     }
 
-    private fun stop() {
+    private fun stopTracking() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }

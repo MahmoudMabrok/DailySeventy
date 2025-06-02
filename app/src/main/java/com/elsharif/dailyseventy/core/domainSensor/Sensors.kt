@@ -40,3 +40,11 @@ class ProximitySensor(
     sensorFeature = PackageManager.FEATURE_SENSOR_PROXIMITY,
     sensorType = Sensor.TYPE_PROXIMITY
 )
+
+class MagnetometerSensor(
+    context: Context
+) : AndroidSensor(
+    context = context,
+    sensorFeature = PackageManager.FEATURE_SENSOR_COMPASS, // Optional, or use FEATURE_SENSOR_MAGNETIC_FIELD
+    sensorType = Sensor.TYPE_MAGNETIC_FIELD
+)

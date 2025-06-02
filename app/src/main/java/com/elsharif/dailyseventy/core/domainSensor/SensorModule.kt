@@ -1,6 +1,7 @@
 package com.elsharif.dailyseventy.core.domainSensor
 
 import android.app.Application
+import com.elsharif.dailyseventy.core.presentationSensor.OrientationSensor
 
 import dagger.Module
 import dagger.Provides
@@ -47,4 +48,17 @@ object SensorModule {
     fun provideProximitySensor(app: Application): ProximitySensor {
         return ProximitySensor(app)
     }
+
+    @Provides
+    @Singleton
+    fun provideMagnetometerSensor(app: Application): MagnetometerSensor {
+        return MagnetometerSensor(app)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOrientationSensor(app: Application): OrientationSensor {
+        return OrientationSensor(app)
+    }
 }
+

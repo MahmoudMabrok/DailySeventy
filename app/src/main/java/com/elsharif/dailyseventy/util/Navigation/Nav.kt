@@ -2,15 +2,20 @@ package com.elsharif.dailyseventy.util.Navigation
 
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Mosque
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Mosque
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.Badge
@@ -32,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.rememberNavController
 import com.elsharif.dailyseventy.util.Screen
+import com.elsharif.dailyseventy.util.workmanager.LocationManager
 
 
 /*
@@ -44,9 +50,13 @@ data class BottomNavigationItem(
     val hasNews:Boolean,
     val badgeCount:Int?=null
 )
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun UnifiedNavigationScaffold() {
+fun UnifiedNavigationScaffold(context: Context) {
+
+
+    val locationManager = LocationManager(context)
 
 
     val navController = rememberNavController()
@@ -56,7 +66,8 @@ fun UnifiedNavigationScaffold() {
     val mainScreens = listOf(
         Screen.Home.route,
         Screen.Morning.route,
-        Screen.Hijri.route
+        Screen.Hijri.route,
+        Screen.Qible.route,
     )
     var currentRoute by remember { mutableStateOf<String?>(null) }
 
@@ -80,6 +91,13 @@ fun UnifiedNavigationScaffold() {
             title = "اذكار_الصباح",
             selectedIcon =Icons.Filled.WbSunny,
             unselectedIcon = Icons.Outlined.WbSunny,
+            hasNews = false,
+            badgeCount = 44
+        ),
+        BottomNavigationItem(
+            title = "القبلة",
+            selectedIcon =Icons.Filled.Mosque,
+            unselectedIcon = Icons.Outlined.Mosque,
             hasNews = false,
             badgeCount = 44
         ),
@@ -149,7 +167,7 @@ fun UnifiedNavigationScaffold() {
         }
     ){
 
-      AppNavHost(navController)
+      AppNavHost(navController,context)
 
     }
 
