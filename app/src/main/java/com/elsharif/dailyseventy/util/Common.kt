@@ -5,15 +5,18 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.os.Build
 import androidx.annotation.FloatRange
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.os.LocaleListCompat
 import androidx.glance.BitmapImageProvider
 import androidx.glance.GlanceModifier
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
+import java.util.Locale
 
 /**
  * Adds rounded corners for the current view.
@@ -45,6 +48,17 @@ fun GlanceModifier.cornerRadiusCompat(
         this.background(BitmapImageProvider(bitmap))
     }
 }
+
+fun setCurrentLanguage(language: String) {
+    val locales = LocaleListCompat.forLanguageTags(language)
+    AppCompatDelegate.setApplicationLocales(locales)
+}
+
+fun getCurrentLanguage(): Locale? {
+    return AppCompatDelegate.getApplicationLocales()[0]
+}
+
+fun isArabic(): Boolean = getCurrentLanguage() == Locale.forLanguageTag("ar")
 
 
 //MAlmahdy

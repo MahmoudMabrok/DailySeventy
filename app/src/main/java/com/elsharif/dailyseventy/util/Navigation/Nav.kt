@@ -11,11 +11,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Mosque
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Mosque
+import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.Badge
@@ -65,7 +67,6 @@ fun UnifiedNavigationScaffold(context: Context) {
 
     val mainScreens = listOf(
         Screen.Home.route,
-        Screen.Morning.route,
         Screen.Hijri.route,
         Screen.Qible.route,
     )
@@ -82,22 +83,22 @@ fun UnifiedNavigationScaffold(context: Context) {
 
     val list = listOf(
         BottomNavigationItem(
-            title = "الرئيسية",
+            title = "الأذكار",
             selectedIcon =Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home,
             hasNews = false
         ),
         BottomNavigationItem(
-            title = "اذكار_الصباح",
-            selectedIcon =Icons.Filled.WbSunny,
-            unselectedIcon = Icons.Outlined.WbSunny,
+            title = "مواقيت الصلاة",
+            selectedIcon =Icons.Filled.Mosque, // AccessTime
+            unselectedIcon = Icons.Outlined.Mosque,
             hasNews = false,
             badgeCount = 44
         ),
         BottomNavigationItem(
             title = "القبلة",
-            selectedIcon =Icons.Filled.Mosque,
-            unselectedIcon = Icons.Outlined.Mosque,
+            selectedIcon =Icons.Filled.MyLocation,
+            unselectedIcon = Icons.Outlined.MyLocation,
             hasNews = false,
             badgeCount = 44
         ),

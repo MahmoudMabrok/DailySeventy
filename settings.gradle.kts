@@ -25,4 +25,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "DailySeventy"
 include(":app")
- 
+include(":core")

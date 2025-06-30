@@ -33,7 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.elsharif.dailyseventy.R
-import com.elsharif.dailyseventy.domain.model.Zakker
+import com.elsharif.dailyseventy.domain.data.model.Zakker
 import com.elsharif.dailyseventy.ui.theme.RadiusContainer
 
 

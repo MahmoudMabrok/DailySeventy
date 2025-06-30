@@ -16,6 +16,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
+     <uses-permission
+        android:name="android.permission.USE_EXACT_ALARM"
+        tools:ignore="ExactAlarm" />
+
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
 
 
@@ -31,6 +38,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DailySeventy"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -45,8 +53,6 @@
 
 
 
-        <meta-data android:name="osmdroid.basePath" android:value="osmdroid"/>
-        <meta-data android:name="osmdroid.cachePath" android:value="osmdroid/cache"/>
 
         <service
             android:name=".util.workmanager.LocationTrackerService"
@@ -68,6 +74,51 @@
             android:exported="true"/>
 
 
+
+        <receiver
+            android:name=".presentaion.widgets.PrayerWidget.PrayerTimesWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prayer_times" />
+        </receiver>
+
+        <receiver
+            android:name=".presentaion.widgets.khatma.QuranKhatmaWidgetReceiver"
+            android:exported="true"
+            tools:ignore="MissingClass">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/khatma" />
+        </receiver>
+
+
+
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
+
+        <receiver
+            android:name=".domain.azan.prayersnotification.AzanAlarmReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </receiver>
 
         <!-- Required for sharing file URIs -->
         <provider

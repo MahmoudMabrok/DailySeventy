@@ -8,4 +8,27 @@
     <string name="AwakeZekr">أذكار الاستيقاظ</string>
     <string name="QuranPrey">أدعية قرآنية</string>
     <string name="ProphetsPrey">أدعية الأنبياء</string>
+
+
+    <string name="prayers_api">Prayer Timings service</string>
+    <string name="reset">reset</string>
+    <string name="tasbeeh_count">Tasbeeh counter</string>
+    <string name="language">Language</string>
+    <string name="dark_mode">Night mode</string>
+    <string name="hijri_calendar">Hijri Calendar</string>
+    <string name="prayer">prayer</string>
+    <string name="prayer_is_now">Prayer is NOW!</string>
+    <string name="search">Search</string>
+    <string name="search_icon">Search Icon</string>
+
+    <string name="fajr">Fajr</string>
+    <string name="dhuhr">Dhuhr</string>
+    <string name="asr">Asr</string>
+    <string name="maghrib">Maghrib</string>
+    <string name="isha">Isha</string>
+    <string name="sun_rise">Sunrise</string>
+    <string name="prayers_time_authorization">Prayers Time Authority</string>
+    <string name="pick_location_acurrately">Pick Location Acurrately</string>
+    <string name="ZEKR">الأذكار</string>
+
 </resources>

@@ -1,6 +1,6 @@
 package com.elsharif.dailyseventy.presentaion.zekr
 
-import com.elsharif.dailyseventy.domain.model.Zakker
+import com.elsharif.dailyseventy.domain.data.model.Zakker
 
 
 data class ZekkrState(

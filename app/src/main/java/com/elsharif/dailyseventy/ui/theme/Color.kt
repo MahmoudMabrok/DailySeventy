@@ -2,6 +2,7 @@ package com.elsharif.dailyseventy.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+
 //0xFF294878
 val primaryLight = Color(0xFF415F91)
 val onPrimaryLight = Color(0xFFFFFFFF)
@@ -223,5 +224,6 @@ val surfaceContainerHighestDarkHighContrast = Color(0xFF45474C)
 
 
 
-
+val White = Color(0xFFFFFFFF)
+val Black = Color(0XFF0D0D0D)
 

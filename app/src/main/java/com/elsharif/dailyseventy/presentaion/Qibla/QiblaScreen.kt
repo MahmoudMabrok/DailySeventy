@@ -100,7 +100,7 @@ fun QiblaScreen(
             modifier = Modifier.size(500.dp)
         ) {
             val compassSize = 350.dp
-            val kabaaSize = 50.dp
+            val kabaaSize = 75.dp
             val radiusDp = compassSize / 2 - kabaaSize / 2
             val density = LocalDensity.current
             val radiusPx = with(density) { radiusDp.toPx() }

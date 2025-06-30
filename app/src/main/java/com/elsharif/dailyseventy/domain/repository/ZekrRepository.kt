@@ -2,12 +2,11 @@ package com.elsharif.dailyseventy.domain.repository
 
 import android.content.Context
 import android.util.Log
-import com.elsharif.dailyseventy.domain.model.Zakker
+import com.elsharif.dailyseventy.domain.data.model.Zakker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class ZekrRepository(private val context: Context) {
