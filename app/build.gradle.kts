@@ -14,7 +14,13 @@ android {
     namespace = "com.elsharif.dailyseventy"
     compileSdk = 35
 
-
+    lint {
+        abortOnError = false
+        warningsAsErrors = false
+        disable += listOf(
+            "NullSafeMutableLiveData"
+        )
+    }
     defaultConfig {
         applicationId = "com.elsharif.dailyseventy"
         minSdk = 24

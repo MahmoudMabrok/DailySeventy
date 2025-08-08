@@ -14,7 +14,15 @@ object AzanPrayersUtil {
 
 
 
+        /*
         WorkManager.getInstance(context.applicationContext).cancelAllWork()
+            This cancels everything, including unrelated workers.
+            🔁 Instead, cancel by tag:
+        * */
+        WorkManager.getInstance(context.applicationContext)
+            .cancelAllWorkByTag("REGISTER_PRAYERS")
+
+
         val registerRequest =
             PeriodicWorkRequest.Builder(RegisterPrayerTimesWorker::class.java, 1, TimeUnit.DAYS)
                 .addTag("REGISTER_PRAYERS")
@@ -22,7 +30,7 @@ object AzanPrayersUtil {
         WorkManager.getInstance(context.applicationContext)
             .enqueueUniquePeriodicWork(
                 "REGISTER_PRAYERS",
-                ExistingPeriodicWorkPolicy.UPDATE,
+                ExistingPeriodicWorkPolicy.KEEP, // Don't override or cancel
                 registerRequest
             )
     }

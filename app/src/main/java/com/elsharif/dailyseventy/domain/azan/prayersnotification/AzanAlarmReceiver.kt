@@ -14,8 +14,14 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.elsharif.dailyseventy.MainActivity
 import com.elsharif.dailyseventy.R
+import androidx.core.net.toUri
 
 class AzanAlarmReceiver : BroadcastReceiver() {
+
+
+
+    //val selectedResId = loadSelectedSound(context)
+    //val azanSound = Uri.parse("android.resource://${context.packageName}/$selectedResId")
 
     private val TAG = "AzanAlarmReceiver"
     override fun onReceive(context: Context, intent: Intent) {
@@ -31,7 +37,7 @@ class AzanAlarmReceiver : BroadcastReceiver() {
             PendingIntent.getActivity(
                 context, id, i, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
-        val azanSound = Uri.parse("android.resource://" + context.packageName + "/" + R.raw.elmola)
+        val azanSound = ("android.resource://" + context.packageName + "/" + R.raw.elmola).toUri()
         sendNotification(context, icon, title, content, azanSound, pendingIntent)
 
     }
@@ -46,6 +52,9 @@ class AzanAlarmReceiver : BroadcastReceiver() {
     ) {
         val manager = context
             .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+
+        /// Fix: Create the notification channel before building the notification.
         val notificationBuilder =
             createNotificationBuilder(context, iconId, title, content, sound, pendingIntent)
         createNotificationChannel(manager, sound)

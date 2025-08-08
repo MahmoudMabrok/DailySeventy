@@ -110,7 +110,7 @@ fun UnifiedNavigationScaffold(context: Context) {
             badgeCount = 12
         ),
         BottomNavigationItem(
-            title = "تفاصيل",
+            title = "الإعدادات",
             selectedIcon =Icons.Filled.Settings,
             unselectedIcon = Icons.Outlined.Settings,
             hasNews = true

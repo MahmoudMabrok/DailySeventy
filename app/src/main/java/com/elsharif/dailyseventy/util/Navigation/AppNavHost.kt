@@ -48,6 +48,11 @@ fun AppNavHost(navController: NavHostController,context: Context) {
             QiblaScreen()
 
         }
+        composable(Screen.Settings.route) {
+          //
+//             ZekrSettingsScreen()
+
+        }
 
     }
 }

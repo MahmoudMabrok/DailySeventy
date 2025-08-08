@@ -28,6 +28,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.elsharif.dailyseventy.domain.azan.prayersnotification.AzanPrayersUtil
+import com.elsharif.dailyseventy.domain.zekr.ZekkrAlarmUtil
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -49,6 +50,8 @@ class MainActivity : ComponentActivity() {
     )
 
 
+
+    @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +63,7 @@ class MainActivity : ComponentActivity() {
                 if (it) {
                     setCurrentLanguage("ar")
                     AppPreferences(this@MainActivity).setIsFirstTime()
+
                 }
             }
         }
@@ -77,6 +81,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun registerZekr(){
+
+        ZekkrAlarmUtil.setRepeatingZekkrNotification(
+            context = this,
+            title = "وقت النبي ﷺ",
+            content = "المُحبّ ينبغي أن لا يتركَ وردَ الصَّلاة والسّلام على سيدنا رسولِ الله صلى الله عليه وسلّم، فإنّ المحبّ لا يغفل عن حبيبه...",
+            iconResId = R.drawable.doaa // or R.mipmap.ic_launcher
+        )
+    }
 
     private fun registerPrayersAzan() {
 
@@ -111,7 +124,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         registerPrayersAzan()
-
+        registerZekr()
     }
 
 }

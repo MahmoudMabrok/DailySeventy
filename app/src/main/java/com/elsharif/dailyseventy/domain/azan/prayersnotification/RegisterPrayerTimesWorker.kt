@@ -15,6 +15,7 @@ import androidx.work.WorkerParameters
 import com.elsharif.dailyseventy.R
 import com.elsharif.dailyseventy.di.WorkerEntryPoint
 import com.elsharif.dailyseventy.domain.AppPreferences
+import com.elsharif.dailyseventy.domain.azan.prayertimes.Date
 import com.example.core.usecase.GetPrayerTimesUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -107,7 +108,10 @@ class RegisterPrayerTimesWorker(private val context: Context, params: WorkerPara
                                 R.string.prayer_is_now
                             )
                         }"
+
+
                     )
+
                 }
             }
 

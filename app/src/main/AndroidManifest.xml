@@ -20,6 +20,8 @@
         android:name="android.permission.USE_EXACT_ALARM"
         tools:ignore="ExactAlarm" />
 
+
+
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
@@ -33,6 +35,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/doaa"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locals"
         android:usesCleartextTraffic="true"
         android:roundIcon="@drawable/doaa"
         android:supportsRtl="true"
@@ -68,6 +71,7 @@
                 android:resource="@xml/counter_widget_info" />
         </receiver>
 
+
         <!-- Register the refresh BroadcastReceiver -->
         <receiver
             android:name=".presentaion.widgets.ZekrWidget.WidgetRefreshReceiver"
@@ -100,6 +104,21 @@
         </receiver>
 
 
+        <receiver
+            android:name=".domain.zekr.ZekrAlarmReceiver"
+            android:exported="false"/>
+
+        <receiver
+            android:name=".domain.azan.prayersnotification.AzanAlarmReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </receiver>
+
+
+
 
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
@@ -111,14 +130,6 @@
         </service>
 
 
-        <receiver
-            android:name=".domain.azan.prayersnotification.AzanAlarmReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </receiver>
 
         <!-- Required for sharing file URIs -->
         <provider
