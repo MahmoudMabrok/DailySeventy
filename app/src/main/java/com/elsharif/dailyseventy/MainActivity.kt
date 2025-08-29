@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.elsharif.dailyseventy.domain.AppPreferences
 import com.elsharif.dailyseventy.domain.azan.prayersnotification.AzanPrayersUtil
+import com.elsharif.dailyseventy.domain.data.shardprefernces.NightThird
 import com.elsharif.dailyseventy.domain.data.shardprefernces.ThemePreferences
 import com.elsharif.dailyseventy.domain.zekr.ZekkrAlarmUtil
 import com.elsharif.dailyseventy.presentaion.prayertimes.PrayerTimeViewModel
@@ -156,7 +157,12 @@ class MainActivity : ComponentActivity() {
         registerZekr()
 
         prayerTimeViewModel.scheduleFridayRemindersFromPrayerTimes()
-
+        // 👇 add this
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            prayerTimeViewModel.scheduleNightThirdNotificationsFromPrayerTimes(applicationContext,    setOf(
+                NightThird.FIRST, NightThird.SECOND , NightThird.THIRD )
+            )
+        }
     }
 
 }

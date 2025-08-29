@@ -58,6 +58,9 @@
 
 
 
+        <receiver
+            android:name=".domain.nightthird.NightThirdReceiver"
+            android:exported="false" />
 
         <receiver
             android:name=".domain.friday.FridayReceiver"

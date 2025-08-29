@@ -37,4 +37,13 @@
     <string name="pick_location_acurrately">Pick Location Acurrately</string>
     <string name="ZEKR">الصفحة الرئيسية</string>
 
+    <string name="qibla">Qibla</string>
+    <string name="qibla_direction">Qibla direction</string>
+    <string name="qibla_angel">Qibla angle</string>
+    <string name="current_direction">Current direction</string>
+    <string name="kaaba">Kaaba</string>
+    <string name="compass">Compass</string>
+    <string name="needle">Needle</string>
+
+
 </resources>

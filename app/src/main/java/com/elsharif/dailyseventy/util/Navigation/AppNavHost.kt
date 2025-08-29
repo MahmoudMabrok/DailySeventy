@@ -14,10 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.elsharif.dailyseventy.R
 import com.elsharif.dailyseventy.core.presentationSensor.HomeScreen
+import com.elsharif.dailyseventy.presentaion.Qibla.QiblaPage
 import com.elsharif.dailyseventy.presentaion.Qibla.QiblaScreen
 import com.elsharif.dailyseventy.presentaion.hijriCalendar.HijriCalendar
 import com.elsharif.dailyseventy.presentaion.azkarcategories.CategoryScreen
-import com.elsharif.dailyseventy.presentaion.colorselection.ColorPicker
 import com.elsharif.dailyseventy.presentaion.home.view.HomePage
 import com.elsharif.dailyseventy.presentaion.prayertimes.PrayerTimesPage
 import com.elsharif.dailyseventy.presentaion.settings.SettingsScreen
@@ -58,12 +58,18 @@ fun AppNavHost(navController: NavHostController,context: Context,themeViewModel:
         }
         composable(Screen.Qible.route) {
           //
-            QiblaScreen(navController)
+//            QiblaScreen(navController)
 
+           QiblaPage(navController)
         }
         composable(Screen.Settings.route) {
 
-            SettingsScreen(navController)
+            SettingsScreen(navController,themeViewModel)
+
+        }
+        composable(Screen.NightThirdRoute.route) {
+
+          //  NightThirdScreen(navController)
 
         }
         composable(Screen.Tasbeeh.route) {
@@ -74,10 +80,12 @@ fun AppNavHost(navController: NavHostController,context: Context,themeViewModel:
             //TasbeehScreen()
         }
         composable(Screen.ColorPicker.route) {
+/*
             ColorPicker(navController = navController) { selectedColor ->
                 themeViewModel.updateColor(selectedColor)
                 navController.popBackStack() // go back after picking
             }
+*/
 
         }
 

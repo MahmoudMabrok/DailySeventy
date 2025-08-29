@@ -1,5 +1,6 @@
 package com.elsharif.dailyseventy.presentaion.settings
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,21 +9,35 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.elsharif.dailyseventy.presentaion.colorselection.ColorPickerDialog
 import com.elsharif.dailyseventy.presentaion.components.DashboardScreenTopBar
+import com.elsharif.dailyseventy.presentaion.thirdofthenight.NightThirdDialog
+import com.elsharif.dailyseventy.ui.theme.ThemeViewModel
 import com.elsharif.dailyseventy.util.Screen
 
+@SuppressLint("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController) {
+fun SettingsScreen(navController: NavController,themeViewModel: ThemeViewModel) {
+
+    var showNightThirdDialog by remember { mutableStateOf(false) }
+    var showColorDialog by remember { mutableStateOf(false) }
+
+
     Scaffold(
         topBar = {
             DashboardScreenTopBar(Screen.Settings.route,navController)
         }
     ) { padding ->
+
         LazyColumn( // ✅ instead of Column
             modifier = Modifier
                 .fillMaxSize()
@@ -34,11 +49,29 @@ fun SettingsScreen(navController: NavController) {
                 SettingsItem("إعدادات اللغة", Icons.Default.Language) {}
             }
             item {
-                SettingsItem("إعدادات حساب الوقت", Icons.Default.AccessTime) {}
+                SettingsItem("إعدادات حساب الوقت", Icons.Default.AccessTime) {
+                    showNightThirdDialog = true
+                }
+                if (showNightThirdDialog) {
+                    NightThirdDialog(
+                        onDismiss = { showNightThirdDialog = false }
+                    )
+                }
             }
             item {
                 SettingsItem("سمات البرنامج", Icons.Default.ColorLens) {
-                    navController.navigate(Screen.ColorPicker.route)
+                 //   navController.navigate(Screen.ColorPicker.route)
+
+                    showColorDialog = true
+                }
+                if (showColorDialog) {
+                    ColorPickerDialog(
+                        onDismiss = { showColorDialog = false },
+                        onColorSelected = { selectedColor ->
+                            themeViewModel.updateColor(selectedColor)
+                            showColorDialog = false
+                        }
+                    )
                 }
             }
             item {

@@ -7,7 +7,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.elsharif.dailyseventy.domain.data.shardprefernces.NightThird
 import com.elsharif.dailyseventy.domain.friday.scheduleFridayReminders
+import com.elsharif.dailyseventy.domain.thirdnight.scheduleNightThirdNotifications
 import com.elsharif.dailyseventy.presentaion.prayertimes.model.UiPrayerTime
 import com.elsharif.dailyseventy.presentaion.prayertimes.model.UiPrayerTimesAuthority
 import com.example.core.domain.prayertiming.DomainPrayerTiming
@@ -161,6 +163,23 @@ class PrayerTimeViewModel @Inject constructor(
             return Pair(maghribTime, fajrTime)
         }
         return null
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun scheduleNightThirdNotificationsFromPrayerTimes(context: Context, selection: Set<NightThird>) {
+        viewModelScope.launch {
+            prayerTimesFlow.collect { prayers ->
+                val maghrib = prayers.firstOrNull { it.name.contains("Maghrib", true) }?.time
+                    ?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern("hh:mm a")) }
+
+                val fajr = prayers.firstOrNull { it.name.contains("Fajr", true) }?.time
+                    ?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern("hh:mm a")) }
+
+                if (maghrib != null && fajr != null) {
+                    scheduleNightThirdNotifications(context, maghrib, fajr, selection)
+                }
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

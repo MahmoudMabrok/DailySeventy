@@ -15,4 +15,6 @@ sealed class  Screen(val route: String) {
 
     object ColorPicker: Screen("سمات البرنامج")
 
+    object NightThirdRoute: Screen("إعدادات حساب الوقت")
+
 }
