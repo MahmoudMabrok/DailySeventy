@@ -64,7 +64,7 @@ fun AppNavHost(navController: NavHostController,context: Context,themeViewModel:
         }
         composable(Screen.Settings.route) {
 
-            SettingsScreen(navController,themeViewModel)
+            SettingsScreen(navController,themeViewModel, context )
 
         }
         composable(Screen.NightThirdRoute.route) {

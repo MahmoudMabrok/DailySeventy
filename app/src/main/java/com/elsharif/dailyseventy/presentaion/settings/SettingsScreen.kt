@@ -1,6 +1,7 @@
 package com.elsharif.dailyseventy.presentaion.settings
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.elsharif.dailyseventy.presentaion.colorselection.ColorPickerDialog
 import com.elsharif.dailyseventy.presentaion.components.DashboardScreenTopBar
+import com.elsharif.dailyseventy.presentaion.prayertimes.AzanSoundSelectorDialog
 import com.elsharif.dailyseventy.presentaion.thirdofthenight.NightThirdDialog
 import com.elsharif.dailyseventy.ui.theme.ThemeViewModel
 import com.elsharif.dailyseventy.util.Screen
@@ -26,10 +28,15 @@ import com.elsharif.dailyseventy.util.Screen
 @SuppressLint("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController,themeViewModel: ThemeViewModel) {
+fun SettingsScreen(
+    navController: NavController,
+    themeViewModel: ThemeViewModel,
+    context: Context
+) {
 
     var showNightThirdDialog by remember { mutableStateOf(false) }
     var showColorDialog by remember { mutableStateOf(false) }
+    var showAzanDialog by remember { mutableStateOf(false) }
 
 
     Scaffold(
@@ -75,7 +82,18 @@ fun SettingsScreen(navController: NavController,themeViewModel: ThemeViewModel) 
                 }
             }
             item {
-                SettingsItem("الإعدادات العامة للأذان", Icons.Default.Notifications) {}
+                SettingsItem("الإعدادات العامة للأذان", Icons.Default.Notifications)  {
+                    showAzanDialog = true
+                }
+                if (showAzanDialog) {
+                    AzanSoundSelectorDialog(
+                        context = context,
+                        onDismiss = { showAzanDialog = false },
+                        onSoundSelected = {
+                            showAzanDialog = false
+                        }
+                    )
+                }
             }
             item {
                 SettingsItem("إعدادات صلاة الجمعة", Icons.Default.Settings) {}

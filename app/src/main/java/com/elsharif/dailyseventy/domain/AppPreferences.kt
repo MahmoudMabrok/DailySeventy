@@ -31,7 +31,7 @@ class AppPreferences(private val context: Context) {
     }
 
 
-    val isFirstTime: Flow<Boolean>
+    val isFirstTime: Flow<Boolean>  
         get() = context.dataStore.data.map {
             it[IS_FIRST_TIME_STORE_KEY] ?: true
         }
@@ -172,6 +172,7 @@ class AppPreferences(private val context: Context) {
         private val LAT_STORE_KEY = doublePreferencesKey(LAT_KEY)
         private val LNG_STORE_KEY = doublePreferencesKey(LNG_KEY)
         private val TASBEEH_STORE_KEY = intPreferencesKey(TASBEEH_KEY)
+
         private val DARK_MODE_STORE_KEY = booleanPreferencesKey(DARK_MODE_ENABLED)
         private val IS_FIRST_TIME_STORE_KEY = booleanPreferencesKey(IS_FIRST_TIME)
         private val KHATMA_PAGE = intPreferencesKey("KHATMA_PAGE")

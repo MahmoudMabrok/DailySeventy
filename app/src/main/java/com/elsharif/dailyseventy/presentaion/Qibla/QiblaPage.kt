@@ -166,7 +166,7 @@ private fun QiblaPageViews(
                         modifier = Modifier.matchParentSize()
                     ) {
                         drawCircle(
-                            color = circleColor.copy(alpha = 0.4f),
+                            color = circleColor,
                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3.dp.toPx())
                         )
                     }
@@ -213,7 +213,7 @@ private fun QiblaPageViews(
                         .size(172.dp)
                         .align(Alignment.Center) // keep in middle
                        .rotate(rotationAngle),
-                   //     .graphicsLayer { rotationZ = rotationAngle // يلف حوالين المركز //    transformOrigin = TransformOrigin(0.5f, 0.5f) // مركز الدوران هو النص },
+             //      //     .graphicsLayer { rotationZ = rotationAngle // يلف حوالين المركز //    transformOrigin = TransformOrigin(0.5f, 0.5f) // مركز الدوران هو النص },
                     colorFilter = ColorFilter.tint(needleColor)
                 )
             }

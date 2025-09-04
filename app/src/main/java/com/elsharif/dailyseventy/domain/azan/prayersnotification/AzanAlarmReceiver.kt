@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.elsharif.dailyseventy.MainActivity
 import com.elsharif.dailyseventy.R
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.AzanSoundPrefs
 
 class AzanAlarmReceiver : BroadcastReceiver() {
 
@@ -33,7 +34,11 @@ class AzanAlarmReceiver : BroadcastReceiver() {
             PendingIntent.getActivity(
                 context, id, i, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
-        val azanSound = ("android.resource://" + context.packageName + "/" + R.raw.azan).toUri()
+        // ⬇️ نجيب الصوت اللي اختاره المستخدم
+        val selectedSoundResId = AzanSoundPrefs.loadSelectedSound(context)
+        val azanSound: Uri = "android.resource://${context.packageName}/$selectedSoundResId".toUri()
+
+
         sendNotification(context, icon, title, content, azanSound, pendingIntent)
 
     }
@@ -76,9 +81,8 @@ class AzanAlarmReceiver : BroadcastReceiver() {
                 )
             ).setContentTitle(title)
             .setSound(sound)
-          //  .setDefaults(NotificationCompat.DEFAULT_SOUND)
-            .setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE) // Keep other defaults except sound
-
+           .setDefaults(NotificationCompat.DEFAULT_SOUND)
+           // .setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE or Not) // Keep other defaults except sound
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_MAX)

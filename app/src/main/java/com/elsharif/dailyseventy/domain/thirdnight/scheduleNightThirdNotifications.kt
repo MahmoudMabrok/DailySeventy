@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.elsharif.dailyseventy.domain.data.shardprefernces.NightThird
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.NightThird
 import com.elsharif.dailyseventy.domain.nightthird.NightThirdReceiver
 import java.time.Duration
 import java.time.LocalDate

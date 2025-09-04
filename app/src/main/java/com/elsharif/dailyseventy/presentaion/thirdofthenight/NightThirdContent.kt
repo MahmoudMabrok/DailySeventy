@@ -25,8 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.elsharif.dailyseventy.domain.data.shardprefernces.NightThird
-import com.elsharif.dailyseventy.domain.data.shardprefernces.NightThirdPrefs
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.NightThird
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.NightThirdPrefs
 import com.elsharif.dailyseventy.domain.thirdnight.cancelNightThirdNotifications
 import com.elsharif.dailyseventy.domain.thirdnight.scheduleNightThirdNotifications
 import com.elsharif.dailyseventy.presentaion.prayertimes.PrayerTimeViewModel

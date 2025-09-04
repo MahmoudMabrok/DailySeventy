@@ -22,8 +22,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.elsharif.dailyseventy.domain.AppPreferences
 import com.elsharif.dailyseventy.domain.azan.prayersnotification.AzanPrayersUtil
-import com.elsharif.dailyseventy.domain.data.shardprefernces.NightThird
-import com.elsharif.dailyseventy.domain.data.shardprefernces.ThemePreferences
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.NightThird
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.ThemePreferences
 import com.elsharif.dailyseventy.domain.zekr.ZekkrAlarmUtil
 import com.elsharif.dailyseventy.presentaion.prayertimes.PrayerTimeViewModel
 import com.elsharif.dailyseventy.ui.theme.DailySeventyTheme

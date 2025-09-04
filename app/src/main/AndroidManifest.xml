@@ -58,6 +58,7 @@
 
 
 
+
         <receiver
             android:name=".domain.nightthird.NightThirdReceiver"
             android:exported="false" />
@@ -122,24 +123,19 @@
         <receiver
             android:name=".domain.azan.prayersnotification.AzanAlarmReceiver"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+        </receiver>
 
         <receiver
             android:name=".domain.preAzan.PreAzanAlarmReceiver"
             android:enabled="true"
             android:exported="false" />
 
-
-        <!--
-                //PreAzanReminderReceiver-->
-<!--
-        <receiver
-
-            android:name=".domain.preAzan.PreAzanAlarmReceiver"
-            android:enabled="true"
-            android:exported="false" />
-
--->
 
 
 

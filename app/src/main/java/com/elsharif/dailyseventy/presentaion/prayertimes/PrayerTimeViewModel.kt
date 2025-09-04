@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.elsharif.dailyseventy.domain.data.shardprefernces.NightThird
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.NightThird
 import com.elsharif.dailyseventy.domain.friday.scheduleFridayReminders
 import com.elsharif.dailyseventy.domain.thirdnight.scheduleNightThirdNotifications
 import com.elsharif.dailyseventy.presentaion.prayertimes.model.UiPrayerTime

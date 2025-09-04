@@ -1,26 +1,20 @@
 package com.elsharif.dailyseventy.presentaion.prayertimes
 
 import android.content.Context
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.glance.appwidget.lazy.LazyColumn
-import androidx.glance.appwidget.lazy.items
 import com.elsharif.dailyseventy.R
 import com.elsharif.dailyseventy.presentaion.prayertimes.model.AzanSound
-import androidx.core.content.edit
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.AzanSoundPrefs
+import com.elsharif.dailyseventy.domain.azan.prayersnotification.updateAzanChannel
 
 @Composable
-fun AzanSoundSelector(
+fun AzanSoundSelectorDialog(
     context: Context,
+    onDismiss: () -> Unit,
     onSoundSelected: () -> Unit
 ) {
     val sounds = listOf(
@@ -31,37 +25,60 @@ fun AzanSoundSelector(
     )
 
     val selectedSoundResId = remember {
-        mutableIntStateOf(loadSelectedSound(context))
+        mutableIntStateOf(AzanSoundPrefs.loadSelectedSound(context))
     }
 
-    LazyColumn {
-        items(sounds) { sound ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        selectedSoundResId.intValue = sound.resId
-                        saveSelectedSound(context, sound.resId)
-                        onSoundSelected()
-                    }
-                    .padding(16.dp)
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = {
+            Text(
+                text = "اختر صوت الأذان",
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = sound.name,
-                    color = if (sound.resId == selectedSoundResId.intValue) Color.Green else Color.Black
-                )
+                sounds.forEach { sound ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = sound.name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if (sound.resId == selectedSoundResId.intValue)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onSurface
+                        )
+                        RadioButton(
+                            selected = sound.resId == selectedSoundResId.intValue,
+                            onClick = {
+                                selectedSoundResId.intValue = sound.resId
+                                AzanSoundPrefs.saveSelectedSound(context, sound.resId)
+
+                                // تحديث القناة فورًا
+                                updateAzanChannel(context)
+
+                                onSoundSelected()
+                                onDismiss()
+                            },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("إلغاء")
             }
         }
-    }
-}
-
-fun saveSelectedSound(context: Context, soundResId: Int) {
-    val prefs = context.getSharedPreferences("azan_prefs", Context.MODE_PRIVATE)
-    prefs.edit { putInt("selected_sound_res_id", soundResId) }
-}
-
-fun loadSelectedSound(context: Context): Int {
-    val prefs = context.getSharedPreferences("azan_prefs", Context.MODE_PRIVATE)
-    // If nothing is saved, return elmola as default
-    return prefs.getInt("selected_sound_res_id", R.raw.elmola)
+    )
 }
