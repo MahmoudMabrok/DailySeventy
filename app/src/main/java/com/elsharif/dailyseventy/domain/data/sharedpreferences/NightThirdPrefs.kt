@@ -4,7 +4,11 @@ package com.elsharif.dailyseventy.domain.data.sharedpreferences
 import android.annotation.SuppressLint
 import android.content.Context
 
-enum class NightThird { FIRST, SECOND, THIRD }
+enum class NightThird(val arabic: String) {
+    FIRST("الثلث الأول"),
+    SECOND("الثلث الثاني"),
+    THIRD("الثلث الأخير")
+}
 
 object NightThirdPrefs {
     private const val PREF = "night_third_prefs"

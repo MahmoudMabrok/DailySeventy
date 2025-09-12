@@ -8,32 +8,40 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.elsharif.dailyseventy.R
-import com.elsharif.dailyseventy.core.presentationSensor.HomeScreen
-import com.elsharif.dailyseventy.presentaion.Qibla.QiblaPage
-import com.elsharif.dailyseventy.presentaion.Qibla.QiblaScreen
-import com.elsharif.dailyseventy.presentaion.hijriCalendar.HijriCalendar
-import com.elsharif.dailyseventy.presentaion.azkarcategories.CategoryScreen
-import com.elsharif.dailyseventy.presentaion.home.view.HomePage
-import com.elsharif.dailyseventy.presentaion.prayertimes.PrayerTimesPage
-import com.elsharif.dailyseventy.presentaion.settings.SettingsScreen
-import com.elsharif.dailyseventy.presentaion.tasbeeh.CustomizableSebhaPage
-import com.elsharif.dailyseventy.presentaion.tasbeeh.TasbeehPage
-import com.elsharif.dailyseventy.presentaion.tasbeeh.TasbeehScreen
-import com.elsharif.dailyseventy.presentaion.zekr.ZekkrScreen
+import com.elsharif.dailyseventy.MainActivity
+import com.elsharif.dailyseventy.presentation.Qibla.QiblaPage
+import com.elsharif.dailyseventy.presentation.hijriCalendar.HijriCalendar
+import com.elsharif.dailyseventy.presentation.azkarcategories.CategoryScreen
+import com.elsharif.dailyseventy.presentation.home.view.HomePage
+import com.elsharif.dailyseventy.presentation.prayertimes.PrayerTimeViewModel
+import com.elsharif.dailyseventy.presentation.prayertimes.PrayerTimesPage
+import com.elsharif.dailyseventy.presentation.settings.SettingsScreen
+import com.elsharif.dailyseventy.presentation.tasbeeh.CustomZikrSebhaPage
+import com.elsharif.dailyseventy.presentation.tasbeeh.CustomizableSebhaPage
+import com.elsharif.dailyseventy.presentation.tasbeeh.ImageSebhaPage
+import com.elsharif.dailyseventy.presentation.tasbeeh.TasbeehLandingPage
+import com.elsharif.dailyseventy.presentation.tasbeeh.TasbeehViewModel
+import com.elsharif.dailyseventy.presentation.tasbeeh.ZikrListSebhaPage
+import com.elsharif.dailyseventy.presentation.zekr.ZekkrScreen
 import com.elsharif.dailyseventy.ui.theme.ThemeViewModel
 import com.elsharif.dailyseventy.util.Screen
 import java.time.chrono.HijrahDate
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavHost(navController: NavHostController,context: Context,themeViewModel: ThemeViewModel) {
+fun AppNavHost(navController: NavHostController,context: Context,themeViewModel: ThemeViewModel,prayerTimeViewModel: PrayerTimeViewModel) {
 
-    NavHost(navController, startDestination = Screen.HomeScreen.route) {
+    val startCategory = (context as? MainActivity)?.intent?.getStringExtra("category") ?: ""
+
+    NavHost(
+        navController,
+        startDestination = if (startCategory.isNotEmpty()) "zekkr_screen/$startCategory" else Screen.HomeScreen.route
+    ) {
         composable(Screen.HomeScreen.route) {
             HomePage(navController)
         }
@@ -57,14 +65,12 @@ fun AppNavHost(navController: NavHostController,context: Context,themeViewModel:
             }
         }
         composable(Screen.Qible.route) {
-          //
-//            QiblaScreen(navController)
 
            QiblaPage(navController)
         }
         composable(Screen.Settings.route) {
 
-            SettingsScreen(navController,themeViewModel, context )
+            SettingsScreen(navController,themeViewModel, context, prayerTimeViewModel)
 
         }
         composable(Screen.NightThirdRoute.route) {
@@ -74,20 +80,30 @@ fun AppNavHost(navController: NavHostController,context: Context,themeViewModel:
         }
         composable(Screen.Tasbeeh.route) {
 
-            //TasbeehPage(navController)
+            TasbeehLandingPage(navController)
 
-            CustomizableSebhaPage()
-            //TasbeehScreen()
         }
         composable(Screen.ColorPicker.route) {
-/*
-            ColorPicker(navController = navController) { selectedColor ->
-                themeViewModel.updateColor(selectedColor)
-                navController.popBackStack() // go back after picking
-            }
-*/
+
 
         }
+        composable(Screen.TasbeehImages.route) {
+            val viewModel: TasbeehViewModel = hiltViewModel()
+
+            ImageSebhaPage(viewModel,navController)
+        }
+        composable(Screen.TasbeehList.route) {
+            val viewModel: TasbeehViewModel = hiltViewModel()
+
+            ZikrListSebhaPage(viewModel,navController)
+
+        }
+        composable(Screen.TasbeehCustom.route) {
+            val viewModel: TasbeehViewModel = hiltViewModel()
+
+            CustomZikrSebhaPage(viewModel,navController)
+        }
+
 
 
     }

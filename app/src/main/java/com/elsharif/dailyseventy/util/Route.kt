@@ -13,6 +13,12 @@ sealed class  Screen(val route: String) {
 
     object Tasbeeh: Screen("تسبيح")
 
+    object TasbeehImages : Screen("تسبيح بعد الصلاة")
+
+    object TasbeehList : Screen("تسبيح من اختيارك")
+
+    object TasbeehCustom : Screen("تسبيح مخصص")
+
     object ColorPicker: Screen("سمات البرنامج")
 
     object NightThirdRoute: Screen("إعدادات حساب الوقت")

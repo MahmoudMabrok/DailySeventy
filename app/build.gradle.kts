@@ -254,4 +254,10 @@ dependencies {
     implementation ("com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.0")
 
 
+    implementation("androidx.lifecycle:lifecycle-process:2.9.3")
+    // دا اللي فيه ViewTreeLifecycleOwner
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.3")
+// علشان ViewTreeSavedStateRegistryOwner
+    implementation("androidx.savedstate:savedstate:1.3.2")
+
 }

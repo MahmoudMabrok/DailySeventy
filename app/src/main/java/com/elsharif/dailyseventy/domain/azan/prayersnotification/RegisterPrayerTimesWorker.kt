@@ -8,13 +8,11 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.elsharif.dailyseventy.R
 import com.elsharif.dailyseventy.di.WorkerEntryPoint
 import com.elsharif.dailyseventy.domain.AppPreferences
-import com.elsharif.dailyseventy.domain.preAzan.PreAzanAlarmReceiver
 import com.example.core.usecase.GetPrayerTimesUseCase
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.Dispatchers
@@ -68,6 +66,7 @@ class RegisterPrayerTimesWorker(
                 val prayerDate = prayerTiming.date
                 val prayerName = if (nameId != 0) context.getString(nameId) else prayerTiming.prayer.name
 
+
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a")
                 val azanMillis = LocalDateTime
                     .from(formatter.parse("$prayerDate $prayerTime"))
@@ -75,30 +74,58 @@ class RegisterPrayerTimesWorker(
                     .toInstant()
                     .toEpochMilli()
 
-                // Main Azan
-                if (azanMillis > System.currentTimeMillis()) {
-                    setAlarm(
-                        AzanAlarmReceiver::class.java,
-                        idx,
-                        azanMillis,
-                        imgId,
-                        "${context.getString(R.string.prayer)} $prayerName",
-                        context.getString(R.string.prayer_is_now)
-                    )
+                if (prayerName != "Sunrise" && prayerName != "الشروق") {
+
+                    // Main Azan
+                    if (azanMillis > System.currentTimeMillis()) {
+                        setAlarm(
+                            AzanAlarmReceiver::class.java,
+                            idx,
+                            azanMillis,
+                            imgId,
+                            "${context.getString(R.string.prayer)} $prayerName",
+                            context.getString(R.string.prayer_is_now),
+                            type = "MAIN",  // ممكن نخليها MAIN
+                            prayerName = prayerName
+                        )
+
+                    }
+
+// Pre-Azan (10 min before)
+                    val preAzanMillis = azanMillis - (10 * 60 * 1000)
+                    if (preAzanMillis > System.currentTimeMillis()) {
+
+                        setAlarm(
+                            PreAndPostAzanAlarmReceiver::class.java,
+                            1000 + idx, // unique ID
+                            preAzanMillis,
+                            imgId,
+                            "${context.getString(R.string.prayer)} $prayerName",
+                            context.getString(R.string.prayer_is_in_10_minutes),
+                            type = "PRE",
+                            prayerName = prayerName
+                        )
+                    }
+
+// Post-Azan (5 min for Maghrib, 20 min otherwise)
+                    val delayMinutes = if (prayerName == "Maghrib") 5 else 20
+                    val postAzanMillis = azanMillis + (delayMinutes * 60 * 1000)
+                    if (postAzanMillis > System.currentTimeMillis()) {
+                        setAlarm(
+                            PreAndPostAzanAlarmReceiver::class.java,
+                            2000 + idx, // different unique ID
+                            postAzanMillis,
+                            imgId,
+                            "${context.getString(R.string.prayer)} $prayerName",
+                            context.getString(R.string.after_prayer_reminder),
+                            type = "POST",
+                            prayerName = prayerName
+                        )
+                    }
+
                 }
 
-                // Pre-Azan (10 min before)
-                val preAzanMillis = azanMillis - (10 * 60 * 1000)
-                if (preAzanMillis > System.currentTimeMillis()) {
-                    setAlarm(
-                        PreAzanAlarmReceiver::class.java,
-                        1000 + idx,
-                        preAzanMillis,
-                        imgId,
-                        "${context.getString(R.string.prayer)} $prayerName",
-                        context.getString(R.string.prayer_is_in_10_minutes)
-                    )
-                }
+
             }
 
             Result.success()
@@ -123,29 +150,36 @@ class RegisterPrayerTimesWorker(
     @SuppressLint("ObsoleteSdkInt")
     private fun setAlarm(
         receiverClass: Class<*>,
-        id: Int,
-        time: Long,
+        requestCode: Int,
+        triggerAtMillis: Long,
         icon: Int,
         title: String,
-        content: String
+        content: String,
+        type: String,
+        prayerName: String
     ) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, receiverClass).apply {
-            putExtra("CONTENT", content)
-            putExtra("TITLE", title)
             putExtra("ICON", icon)
-            putExtra("ID", id)
+            putExtra("TITLE", title)
+            putExtra("CONTENT", content)
+            putExtra("ID", requestCode)
+            putExtra("TYPE", type)
+            putExtra("PRAYER", prayerName)
         }
 
-        val pi = PendingIntent.getBroadcast(
-            context, id, intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pi)
-        } else {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pi)
-        }
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerAtMillis,
+            pendingIntent
+        )
     }
+
 }

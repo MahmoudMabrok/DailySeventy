@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
 
     <uses-permission
@@ -59,20 +60,56 @@
 
 
 
+
+
+<!--
         <receiver
             android:name=".domain.nightthird.NightThirdReceiver"
+            android:exported="false" /-->>
+
+<!--
+        <receiver
+            android:name=".domain.friday.FridayReceiver"
+            android:exported="true" />-->
+
+<!--
+        <service
+            android:name=".domain.overlay.OverlayService"
             android:exported="false" />
 
         <receiver
-            android:name=".domain.friday.FridayReceiver"
-            android:exported="true" />
+            android:name=".domain.overlay.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+            </intent-filter>
+        </receiver>
+-->
 
+<!--
+
+        &lt;!&ndash; Overlay Service Declaration &ndash;&gt;
         <service
-            android:name=".util.workmanager.LocationTrackerService"
-            android:foregroundServiceType="location" />
+            android:name=".domain.overlay.OverlayService"
+            android:enabled="true"
+            android:exported="false" />
+
+        &lt;!&ndash; Boot Receiver Declaration &ndash;&gt;
+        <receiver
+            android:name=".domain.overlay.BootReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
+-->
 
 
-        <receiver android:name=".presentaion.widgets.ZekrWidget.WidgetReceiver" android:exported="true">
+        <receiver android:name=".presentation.widgets.ZekrWidget.WidgetReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -84,13 +121,13 @@
 
         <!-- Register the refresh BroadcastReceiver -->
         <receiver
-            android:name=".presentaion.widgets.ZekrWidget.WidgetRefreshReceiver"
+            android:name=".presentation.widgets.ZekrWidget.WidgetRefreshReceiver"
             android:exported="true"/>
 
 
 
         <receiver
-            android:name=".presentaion.widgets.PrayerWidget.PrayerTimesWidgetReceiver"
+            android:name=".presentation.widgets.PrayerWidget.PrayerTimesWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -102,7 +139,7 @@
         </receiver>
 
         <receiver
-            android:name=".presentaion.widgets.khatma.QuranKhatmaWidgetReceiver"
+            android:name=".presentation.widgets.khatma.QuranKhatmaWidgetReceiver"
             android:exported="true"
             tools:ignore="MissingClass">
             <intent-filter>
@@ -116,9 +153,11 @@
 
 
 
+<!--
         <receiver
             android:name=".domain.zekr.ZekrAlarmReceiver"
             android:exported="false"/>
+-->
 
         <receiver
             android:name=".domain.azan.prayersnotification.AzanAlarmReceiver"
@@ -132,7 +171,7 @@
         </receiver>
 
         <receiver
-            android:name=".domain.preAzan.PreAzanAlarmReceiver"
+            android:name=".domain.azan.prayersnotification.PreAndPostAzanAlarmReceiver"
             android:enabled="true"
             android:exported="false" />
 
@@ -163,7 +202,7 @@
 
 
         <receiver
-            android:name=".presentaion.widgets.HijriDateWidget.MyClockWidgetProvider"
+            android:name=".presentation.widgets.HijriDateWidget.MyClockWidgetProvider"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

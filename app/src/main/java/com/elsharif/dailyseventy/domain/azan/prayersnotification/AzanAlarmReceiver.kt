@@ -55,7 +55,7 @@ class AzanAlarmReceiver : BroadcastReceiver() {
             .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationBuilder =
             createNotificationBuilder(context, iconId, title, content, sound, pendingIntent)
-        createNotificationChannel(manager, sound)
+        createNotificationChannel(  manager, context, sound)
         manager.notify(0, notificationBuilder.build())
     }
 
@@ -67,24 +67,21 @@ class AzanAlarmReceiver : BroadcastReceiver() {
         sound: Uri,
         pendingIntent: PendingIntent
     ): NotificationCompat.Builder {
-        val notificationBuilder = NotificationCompat.Builder(
-            context,
-            CHANNEL_ID
-        )
+
+        // 🟢 هنا نربط الـ channelId بالصوت المختار
+        val channelId = getAzanChannelId(context, sound)
+
+        val notificationBuilder = NotificationCompat.Builder(context, channelId)
         Log.d(TAG, "createNotificationBuilder: $title $content ${sound.path}")
+
         notificationBuilder
             .setSmallIcon(iconId)
-            .setLargeIcon(
-                BitmapFactory.decodeResource(
-                    context.resources,
-                    iconId
-                )
-            ).setContentTitle(title)
-            .setSound(sound)
-           .setDefaults(NotificationCompat.DEFAULT_SOUND)
-           // .setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE or Not) // Keep other defaults except sound
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setLargeIcon(BitmapFactory.decodeResource(context.resources, iconId))
+            .setContentTitle(title)
             .setContentText(content)
+            .setAutoCancel(true)
+            .setSound(sound) // لأجهزة أقل من أندرويد O
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setContentIntent(pendingIntent)
             .setColorized(true)
@@ -92,25 +89,38 @@ class AzanAlarmReceiver : BroadcastReceiver() {
         return notificationBuilder
     }
 
-    private fun createNotificationChannel(manager: NotificationManager, sound: Uri) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            val audioAttributes = AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                .build()
-            notificationChannel.importance = NotificationManager.IMPORTANCE_HIGH
-            notificationChannel.setSound(sound, audioAttributes)
-            notificationChannel.enableVibration(true) // Optional: enable vibration
-            notificationChannel.enableLights(true) // Optional: enable LED lights
 
-            manager.createNotificationChannel(notificationChannel)
+    private fun createNotificationChannel(manager: NotificationManager, context: Context, sound: Uri): String {
+        val channelId = getAzanChannelId(context, sound)
+        val channelName = "Azan Channel - ${sound.lastPathSegment}"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // لو القناة لسه مش موجودة اعملها
+            if (manager.getNotificationChannel(channelId) == null) {
+                val audioAttributes = AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                    .build()
+
+                val notificationChannel = NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+                notificationChannel.setSound(sound, audioAttributes)
+                notificationChannel.enableVibration(true)
+                notificationChannel.enableLights(true)
+
+                manager.createNotificationChannel(notificationChannel)
+            }
         }
+        return channelId
     }
+
+    private fun getAzanChannelId(context: Context, sound: Uri): String {
+        return "AZAN_CHANNEL_${sound.lastPathSegment}"
+    }
+
 
     companion object {
         private const val CHANNEL_ID = "AZAN_CHANNEL"

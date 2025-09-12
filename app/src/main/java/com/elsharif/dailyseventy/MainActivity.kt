@@ -20,31 +20,37 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.elsharif.dailyseventy.domain.AppPreferences
 import com.elsharif.dailyseventy.domain.azan.prayersnotification.AzanPrayersUtil
+import com.elsharif.dailyseventy.domain.dailyazkar.AzkarWorker
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.FridayPrefs
 import com.elsharif.dailyseventy.domain.data.sharedpreferences.NightThird
 import com.elsharif.dailyseventy.domain.data.sharedpreferences.ThemePreferences
-import com.elsharif.dailyseventy.domain.zekr.ZekkrAlarmUtil
-import com.elsharif.dailyseventy.presentaion.prayertimes.PrayerTimeViewModel
+import com.elsharif.dailyseventy.domain.zekr.ZekrWorker
+import com.elsharif.dailyseventy.presentation.prayertimes.PrayerTimeViewModel
+import com.elsharif.dailyseventy.presentation.tasbeeh.TasbeehViewModel
 import com.elsharif.dailyseventy.ui.theme.DailySeventyTheme
 import com.elsharif.dailyseventy.ui.theme.ThemeViewModel
 import com.elsharif.dailyseventy.util.Navigation.AppNavHost
 import com.elsharif.dailyseventy.util.Permissions.requestExactAlarmPermission
 import com.elsharif.dailyseventy.util.Permissions.requestNotificationPermission
 import com.elsharif.dailyseventy.util.setCurrentLanguage
-import com.elsharif.dailyseventy.util.workmanager.LocationManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
 
-    private val locationManager by lazy {
-        LocationManager(applicationContext)
-    }
 
     private val themeViewModel by viewModels<ThemeViewModel> {
         val prefs = ThemePreferences(applicationContext)
@@ -61,12 +67,16 @@ class MainActivity : ComponentActivity() {
     // Friday ViewModel
     private val prayerTimeViewModel: PrayerTimeViewModel by viewModels()
 
+  //  private val tasbeehViewModel : TasbeehViewModel by viewModels ()
+
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val permissions = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.POST_NOTIFICATIONS,
     )
+
 
 
 
@@ -86,12 +96,33 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+/*
 
+
+        /// For overlay
+        // طلب إذن draw over other apps لو مش موجود
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            intent.data = Uri.parse("package:$packageName")
+            startActivity(intent) // المستخدم يعطي الإذن يدوياً
+        } else {
+            // لو الإذن موجود وحالة OverlayPrefs مفعلة نبدأ الخدمة فوراً
+            if (OverlayPrefs.isEnabled(this)) {
+                val svcIntent = Intent(this, OverlayService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(svcIntent)
+                } else {
+                    startService(svcIntent)
+                }
+            }
+        }
+*/
 
         enableEdgeToEdge()
         requestIgnoreBatteryOptimization()
         requestExactAlarmPermission(this)
         requestNotificationPermission(this)
+
 
         setContent {
             DailySeventyTheme(
@@ -102,19 +133,63 @@ class MainActivity : ComponentActivity() {
 
                 val context = LocalContext.current
 
-                AppNavHost(context = context, themeViewModel = themeViewModel,navController= navController)
+                AppNavHost(context = context, themeViewModel = themeViewModel,navController= navController, prayerTimeViewModel = prayerTimeViewModel)
             }
         }
     }
 
-    private fun registerZekr(){
+    private fun registerZekr() {
+        val workRequest = PeriodicWorkRequestBuilder<ZekrWorker>(
+            15, TimeUnit.MINUTES // ⏰ الحد الأدنى المسموح في WorkManager
+        ).setInputData(
+            workDataOf(
+                "TITLE" to "وقت الصلاة على النبي ﷺ",
+                "CONTENT" to "المُحبّ ينبغي أن لا يتركَ وردَ الصَّلاة والسّلام على سيدنا رسولِ الله صلى الله عليه وسلّم، فإنّ المحبّ لا يغفل عن حبيبه...",
+                "ICON" to R.drawable.doaa,
+                "ID" to 1001
+            )
+        ).build()
 
-        ZekkrAlarmUtil.setRepeatingZekkrNotification(
-            context = this,
-            title = "وقت النبي ﷺ",
-            content = "المُحبّ ينبغي أن لا يتركَ وردَ الصَّلاة والسّلام على سيدنا رسولِ الله صلى الله عليه وسلّم، فإنّ المحبّ لا يغفل عن حبيبه...",
-            iconResId = R.drawable.doaa // or R.mipmap.ic_launcher
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "zekr_work", // اسم فريد
+            ExistingPeriodicWorkPolicy.REPLACE,
+            workRequest
         )
+    }
+
+
+
+    private fun scheduleAzkarWork() {
+        val azkarTimes = listOf(
+            Triple("morning", 9, 0),
+            Triple("evening", 18, 30),
+            Triple("night", 0, 0)
+        )
+
+        val workManager = WorkManager.getInstance(applicationContext)
+
+        azkarTimes.forEach { (type, hour, minute) ->
+            val now = java.util.Calendar.getInstance()
+            val scheduleTime = java.util.Calendar.getInstance().apply {
+                set(java.util.Calendar.HOUR_OF_DAY, hour)
+                set(java.util.Calendar.MINUTE, minute)
+                set(java.util.Calendar.SECOND, 0)
+                if (before(now)) add(java.util.Calendar.DAY_OF_MONTH, 1)
+            }
+
+            val initialDelay = scheduleTime.timeInMillis - now.timeInMillis
+
+            val workRequest = OneTimeWorkRequestBuilder<AzkarWorker>()
+                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                .setInputData(workDataOf("type" to type))
+                .build()
+
+            workManager.enqueueUniqueWork(
+                "azkar_$type",
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
+        }
     }
 
 
@@ -155,13 +230,24 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         registerPrayersAzan()
         registerZekr()
+        scheduleAzkarWork()
 
-        prayerTimeViewModel.scheduleFridayRemindersFromPrayerTimes()
-        // 👇 add this
+        val kahfEnabled = FridayPrefs.loadKahf(this)
+        val asrEnabled = FridayPrefs.loadAsr(this)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            prayerTimeViewModel.scheduleNightThirdNotificationsFromPrayerTimes(applicationContext,    setOf(
-                NightThird.FIRST, NightThird.SECOND , NightThird.THIRD )
+            prayerTimeViewModel.scheduleFridayReminders(
+                context = this,
+                kahfEnabled = kahfEnabled,
+                asrEnabled = asrEnabled
             )
+
+            prayerTimeViewModel.scheduleNightThirdNotificationsFromPrayerTimes(
+                applicationContext,
+                setOf(NightThird.FIRST, NightThird.SECOND, NightThird.THIRD)
+            )
+
+            prayerTimeViewModel.scheduleSunriseAzkar(applicationContext)
         }
     }
 

@@ -1,79 +1,55 @@
 package com.elsharif.dailyseventy.domain.zekr
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
-import com.elsharif.dailyseventy.MainActivity
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import com.elsharif.dailyseventy.R
 
-class ZekrAlarmReceiver : BroadcastReceiver() {
+class ZekrWorker(
+    context: Context,
+    params: WorkerParameters
+) : Worker(context, params) {
 
-    override fun onReceive(context: Context, intent: Intent) {
-        val i = Intent(context, MainActivity::class.java)
-        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    override fun doWork(): Result {
+        val title = inputData.getString("TITLE") ?: "تذكير"
+        val content = inputData.getString("CONTENT") ?: "اذكر الله"
+        val iconResId = inputData.getInt("ICON", R.drawable.doaa)
+        val id = inputData.getInt("ID", 1001)
 
-        val content = intent.getStringExtra("CONTENT")
-        val title = intent.getStringExtra("TITLE")
-        val icon = intent.getIntExtra("ICON", R.mipmap.ic_launcher)
-        val id = intent.getIntExtra("ID", 1)
+        val zekrSound: Uri =
+            ("android.resource://${applicationContext.packageName}/${R.raw.tazker}").toUri()
 
-        val pendingIntent: PendingIntent =
-            PendingIntent.getActivity(
-                context, id, i, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-
-        val zekrSound = ("android.resource://${context.packageName}/${R.raw.tazker}")
-            .toUri()
-
-        sendNotification(context, icon, title, content, zekrSound, pendingIntent,id)
+        showNotification(title, content, iconResId, id, zekrSound)
+        return Result.success()
     }
 
-    private fun sendNotification(
-        context: Context,
-        iconId: Int,
-        title: String?,
-        content: String?,
-        sound: Uri,
-        pendingIntent: PendingIntent,
-        id:Int,
-    ) {
-        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        createNotificationChannel(manager, sound)
-        val notificationBuilder = createNotificationBuilder(context, iconId, title, content, sound, pendingIntent)
-        manager.notify(id, notificationBuilder.build())
-    }
+    private fun showNotification(title: String, content: String, iconResId: Int, id: Int, sound: Uri) {
+        val manager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    private fun createNotificationBuilder(
-        context: Context,
-        iconId: Int,
-        title: String?,
-        content: String?,
-        sound: Uri,
-        pendingIntent: PendingIntent
-    ): NotificationCompat.Builder {
-        return NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(iconId)
-            .setLargeIcon(BitmapFactory.decodeResource(context.resources, iconId))
+        createChannel(manager, sound)
+
+        val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+            .setSmallIcon(iconResId)
+            .setLargeIcon(BitmapFactory.decodeResource(applicationContext.resources, iconResId))
             .setContentTitle(title)
             .setContentText(content)
-            .setSound(sound)
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setContentIntent(pendingIntent)
+            .setSound(sound)
             .setAutoCancel(true)
+            .build()
+
+        manager.notify(id, notification)
     }
 
-    @SuppressLint("WrongConstant")
-    private fun createNotificationChannel(manager: NotificationManager, sound: Uri) {
+    private fun createChannel(manager: NotificationManager, sound: Uri) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val audioAttributes = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -82,9 +58,12 @@ class ZekrAlarmReceiver : BroadcastReceiver() {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_MAX
-            )
-            channel.setSound(sound, audioAttributes)
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                setSound(sound, audioAttributes)
+                enableVibration(true)
+            }
+
             manager.createNotificationChannel(channel)
         }
     }

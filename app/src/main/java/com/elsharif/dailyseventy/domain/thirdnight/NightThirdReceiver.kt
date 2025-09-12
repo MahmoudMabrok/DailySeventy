@@ -1,18 +1,26 @@
-// app/src/main/java/com/elsharif/dailyseventy/domain/nightthird/NightThirdReceiver.kt
-package com.elsharif.dailyseventy.domain.nightthird
+package com.elsharif.dailyseventy.domain.thirdnight
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import com.elsharif.dailyseventy.domain.data.sharedpreferences.NightThird
 
-class NightThirdReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-        val part = intent?.getStringExtra("third_name") ?: return
-        context ?: return
+class NightThirdWorker(
+    context: Context,
+    workerParams: WorkerParameters
+) : Worker(context, workerParams) {
+
+    override fun doWork(): Result {
+        val partName = inputData.getString("third_name") ?: return Result.failure()
+        val part = NightThird.valueOf(partName) // رجع enum
+
+
         NightThirdNotifier.notify(
-            context = context,
+            context = applicationContext,
             title = "تنبيه",
-            message = "بدأ $part من الليل 🌙"
+            message = "بدأ ${part.arabic} من الليل 🌙"
         )
+
+        return Result.success()
     }
 }

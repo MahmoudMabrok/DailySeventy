@@ -1,28 +1,36 @@
 package com.elsharif.dailyseventy.domain.friday
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 
-class FridayReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        val type = intent.getStringExtra("type")
+class FridayReminderWorker(
+    context: Context,
+    workerParams: WorkerParameters
+) : Worker(context, workerParams) {
+
+    override fun doWork(): Result {
+        val type = inputData.getString("type") ?: return Result.failure()
 
         when (type) {
             "kahf" -> {
                 NotificationHelper.showNotification(
-                    context,
+                    applicationContext,
                     "Friday Reminder",
-                    "Don’t forget to read Surah Al-Kahf after Dhuhr."
+                    "Don’t forget to read Surah Al-Kahf after Dhuhr.",
+                    "kahf"
                 )
             }
             "asr" -> {
                 NotificationHelper.showNotification(
-                    context,
+                    applicationContext,
                     "Friday Reminder",
-                    "Make extra duaa after Asr on Friday."
+                    "Make extra duaa after Asr on Friday.",
+                    "asr"
                 )
             }
         }
+
+        return Result.success()
     }
 }

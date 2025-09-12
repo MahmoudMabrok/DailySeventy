@@ -19,6 +19,10 @@
     <string name="prayer">prayer</string>
 
     <string name="prayer_is_in_10_minutes">prayer is in 10 minutes</string>
+    <string name="after_prayer_reminder">prayer is NOW Go!</string>
+    <string name="tasbeeh_after_prayer"> سبحة بعد الصلاة🕌</string>
+    <string name="tasbeeh_by_zekr">قائمة الأذكار📜</string>
+    <string name="tasbeeh_custom">سبحة مخصصة✍️</string>
 
     <string name="is_coming_soon">Is Coming Soon</string>
 
