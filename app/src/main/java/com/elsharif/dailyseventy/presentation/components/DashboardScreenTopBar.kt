@@ -2,6 +2,7 @@ package com.elsharif.dailyseventy.presentation.components
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -38,7 +39,7 @@ fun DashboardScreenTopBar (@StringRes  name: Int  = R.string.app_name, navContro
             if (navController.previousBackStackEntry != null) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = "Back"
                     )
                 }

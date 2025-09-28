@@ -15,6 +15,7 @@
     <string name="Ruqyah">Ruqyah from Quran</string>
     <string name="TasbihAll">Tasbih, Tahmid, Tahleel, Takbeer</string>
     <string name="MiscZekr">Miscellaneous Dhikr</string>
+    <string name="holy_quran">Holy Quran</string>
 
     <string name="friday_reminders">Friday Reminders</string>
     <string name="kahf_reminder">Kahf Recitation Reminder</string>

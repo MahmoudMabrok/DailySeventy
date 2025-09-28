@@ -123,6 +123,11 @@ class PrayerTimesDataSourceImp @Inject constructor(
             )
         ).filter { it.time.isNotBlank() } // فلترة الأوقات الفاضية
 
+        // أولاً: تنظيف البيانات القديمة (أقدم من 30 يوم)
+        val thirtyDaysAgo = LocalDate.now().minusDays(30).toString()
+        dao.deleteOldPrayerTimes(thirtyDaysAgo)
+
+
         val dateString = date.toString()
 
         // نحاول نجيب البيانات من الكاش أولاً
@@ -158,6 +163,8 @@ class PrayerTimesDataSourceImp @Inject constructor(
         val domainPrayersUnique = domainPrayers.distinctBy { "${it.date}_${it.prayer.name}" }
 
         Log.d(TAG, "Total prayers after deduplication: ${domainPrayersUnique.size}")
+        // أولاً: نحذف البيانات القديمة لنفس التاريخ والموقع والمدرسة
+        dao.deletePrayerTimesForDay(dateString, lat, lng, school.id)
 
         // نخزن النتائج في الكاش
         dao.insertAll(domainPrayersUnique.map { it.toEntity() })

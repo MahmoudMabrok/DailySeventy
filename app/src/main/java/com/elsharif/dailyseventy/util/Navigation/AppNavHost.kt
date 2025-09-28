@@ -19,6 +19,7 @@ import com.elsharif.dailyseventy.presentation.sensor.StepAlarmViewModel
 import com.elsharif.dailyseventy.presentation.Qibla.QiblaPage
 import com.elsharif.dailyseventy.presentation.Qibla.QiblaPageWithSplash
 import com.elsharif.dailyseventy.presentation.azkarcategories.CategoryScreen
+import com.elsharif.dailyseventy.presentation.comingsoon.ComingSoonPage
 import com.elsharif.dailyseventy.presentation.hijriCalendar.HijriCalendar
 import com.elsharif.dailyseventy.presentation.home.view.HomePage
 import com.elsharif.dailyseventy.presentation.home.view.SplashScreen
@@ -97,9 +98,9 @@ fun AppNavHost(navController: NavHostController,context: Context,themeViewModel:
             SettingsScreen(navController,themeViewModel, context, prayerTimeViewModel,viewModel)
 
         }
-        composable(Screen.NightThirdRoute.route) {
+        composable(Screen.ComingSoon.route) {
 
-          //  NightThirdScreen(navController)
+            ComingSoonPage(navController)
 
         }
         composable(Screen.Tasbeeh.route) {

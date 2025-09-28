@@ -15,4 +15,12 @@ interface PrayerTimesDao {
         lng: Double,
         schoolId: Int
     ): List<PrayerTimesEntity>
+
+
+    @Query("DELETE FROM prayer_times WHERE date = :date AND lat = :lat AND lng = :lng AND schoolId = :schoolId")
+    suspend fun deletePrayerTimesForDay(date: String, lat: Double, lng: Double, schoolId: Int)
+
+    @Query("DELETE FROM prayer_times WHERE date < :oldDate")
+    suspend fun deleteOldPrayerTimes(oldDate: String)
+
 }

@@ -18,6 +18,7 @@
     <string name="friday_reminders">Rappels du Vendredi</string>
     <string name="kahf_reminder">Rappel de lecture du Kahf</string>
     <string name="asr_time_reminder">Heure de réponse (Asr)</string>
+    <string name="holy_quran">Coran sacré</string>
 
 
     <string name="prayers_api">Service d\'Horaires de Prière</string>

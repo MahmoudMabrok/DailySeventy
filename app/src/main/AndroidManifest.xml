@@ -44,7 +44,6 @@
         android:icon="@drawable/doaa"
         android:label="@string/app_name"
         android:localeConfig="@xml/locals"
-
         android:usesCleartextTraffic="true"
         android:roundIcon="@drawable/doaa"
         android:supportsRtl="true"
@@ -146,6 +145,8 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+
             </intent-filter>
 
             <meta-data

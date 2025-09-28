@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
@@ -150,7 +152,7 @@ fun HijriCalendar(
                                 }
                             ) {
                                 Icon(
-                                    Icons.Default.KeyboardArrowLeft,
+                                    Icons.AutoMirrored.Default.KeyboardArrowLeft,
                                     contentDescription = "Previous Month",
                                     tint = MaterialTheme.colorScheme.primary
                                 )
@@ -170,7 +172,7 @@ fun HijriCalendar(
                                 }
                             ) {
                                 Icon(
-                                    Icons.Default.KeyboardArrowRight,
+                                    Icons.AutoMirrored.Default.KeyboardArrowRight,
                                     contentDescription = "Next Month",
                                     tint = MaterialTheme.colorScheme.primary
                                 )
@@ -315,7 +317,7 @@ private fun YearPicker(
             }
         ) {
             Icon(
-                Icons.Default.KeyboardArrowLeft,
+                Icons.AutoMirrored.Default.KeyboardArrowLeft,
                 contentDescription = "Increase Month",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = modifier.weight(.15f)
@@ -335,7 +337,7 @@ private fun YearPicker(
             }
         ) {
             Icon(
-                Icons.Default.KeyboardArrowRight,
+                Icons.AutoMirrored.Default.KeyboardArrowRight,
                 contentDescription = "Decrease Month",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = modifier.weight(.15f)

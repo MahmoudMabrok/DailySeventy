@@ -389,6 +389,8 @@ class PrayerTimeViewModel @Inject constructor(
             val geocoder = android.location.Geocoder(context, currentLocale)
 
             val addresses = geocoder.getFromLocation(geoPoint.latitude, geoPoint.longitude, 1)
+            Log.e("PrayerViewModel", " fetching location0: ${addressText.value}")
+
             if (!addresses.isNullOrEmpty()) {
                 val adminArea = addresses[0].adminArea ?: ""   // المحافظة / المنطقة
                 val city = addresses[0].locality ?: ""         // المدينة
@@ -427,6 +429,7 @@ class PrayerTimeViewModel @Inject constructor(
 
             // ✅ تحديث العنوان مباشرة بعد جلب الموقع
             updateAddressFromGeoPoint(location)
+            Log.e("PrayerViewModel", " fetching location1: ${location}")
 
             if (isNetworkAvailable()) {
                 _mapState.value = MapUiState.Success(location)

@@ -1,8 +1,12 @@
 package com.elsharif.dailyseventy.util
 
+import android.appwidget.AppWidgetManager
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
@@ -19,6 +23,7 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import com.elsharif.dailyseventy.presentation.widgets.PrayerWidget.PrayerTimesWidget
+import com.elsharif.dailyseventy.presentation.widgets.PrayerWidget.PrayerTimesWidgetReceiver
 import kotlinx.coroutines.flow.FlowCollector
 import net.time4j.SystemClock
 import net.time4j.calendar.HijriCalendar
@@ -92,8 +97,24 @@ fun ColorFilter.Companion.inverse() = colorMatrix(ColorMatrix(negative).apply { 
 
 
 suspend fun Context.updatePrayerTimesWidget() {
-    val ids = GlanceAppWidgetManager(this).getGlanceIds(PrayerTimesWidget::class.java)
-    ids.forEach {
-        PrayerTimesWidget.update(this, it)
+     val TAG = "PrayerTimesWidget"
+
+    try {
+        val appWidgetManager = AppWidgetManager.getInstance(this)
+        val widgetIds = appWidgetManager.getAppWidgetIds(
+            ComponentName(this, PrayerTimesWidgetReceiver::class.java)
+        )
+
+        if (widgetIds.isNotEmpty()) {
+            val intent = Intent(this, PrayerTimesWidgetReceiver::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+            }
+            sendBroadcast(intent)
+        }
+
+        Log.d(TAG, "Prayer times widget updated for ${widgetIds.size} widgets")
+    } catch (e: Exception) {
+        Log.e(TAG, "Error updating prayer times widget: ${e.message}")
     }
 }

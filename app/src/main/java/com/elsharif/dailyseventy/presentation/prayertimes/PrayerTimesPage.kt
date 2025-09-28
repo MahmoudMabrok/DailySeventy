@@ -1,12 +1,20 @@
 package com.elsharif.dailyseventy.presentation.prayertimes
 
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.os.Handler
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.Image
@@ -30,8 +38,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,6 +52,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,6 +73,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -74,6 +86,12 @@ import com.elsharif.dailyseventy.presentation.prayertimes.model.PrayerUiState
 import com.elsharif.dailyseventy.presentation.prayertimes.model.UiPrayerTime
 import com.elsharif.dailyseventy.presentation.prayertimes.model.UiPrayerTimesAuthority
 import com.elsharif.dailyseventy.util.Screen
+import com.google.android.gms.location.LocationAvailability
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -250,6 +268,7 @@ private fun PrayerTimesViews(
             onMapClick = { geoPoint ->
                 onMapClick(geoPoint)
                 // 🟢 تحديث العنوان من الفيو موديل مباشرة
+                viewModel.updateLocation(geoPoint)
                 viewModel.updateAddressFromGeoPoint(geoPoint)
             }
         )
@@ -261,23 +280,103 @@ private fun PrayerTimesViews(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // زر جلب الموقع الحالي
+            /*var isGettingLocation by remember { mutableStateOf(false) }
+
+            // زر جلب الموقع الحالي - محسن
             Button(
                 onClick = {
+                    isGettingLocation = true
                     val fused = com.google.android.gms.location.LocationServices
                         .getFusedLocationProviderClient(context)
-                    fused.lastLocation.addOnSuccessListener { loc ->
-                        if (loc != null) {
+
+                    fused.lastLocation.addOnCompleteListener { task ->
+                        isGettingLocation = false
+                        if (task.isSuccessful && task.result != null) {
+                            val loc = task.result
                             val geo = GeoPoint(loc.latitude, loc.longitude)
-                            onMapClick(geo)
-                            // 🟢 كمان هنا نخلي التحديث من الفيو موديل
+
+                            // 🔥 هنا المشكلة! يجب استدعاء updateLocation من الـ ViewModel
+                            // بدلاً من onMapClick فقط
+                            viewModel.updateLocation(geo) // هذا يحدث الخريطة والموقع في الـ ViewModel
+
+                            // تحديث العنوان أيضاً
                             viewModel.updateAddressFromGeoPoint(geo)
+                        } else {
+                            // في حالة فشل lastLocation، جرب طلب موقع جديد
+                            isGettingLocation = true
+                            val locationRequest = LocationRequest.Builder(
+                                Priority.PRIORITY_HIGH_ACCURACY, 5000L
+                            ).build()
+
+                            val locationCallback = object : LocationCallback() {
+                                override fun onLocationResult(locationResult: LocationResult) {
+                                    isGettingLocation = false
+                                    locationResult.lastLocation?.let { location ->
+                                        val geoPoint = GeoPoint(location.latitude, location.longitude)
+
+                                        // 🔥 استدعاء updateLocation مرة أخرى هنا
+                                        viewModel.updateLocation(geoPoint)
+                                        viewModel.updateAddressFromGeoPoint(geoPoint)
+
+                                        // إزالة callback بعد الحصول على الموقع
+                                        fused.removeLocationUpdates(this)
+                                    }
+                                }
+                            }
+
+                            try {
+                                fused.requestLocationUpdates(
+                                    locationRequest,
+                                    locationCallback,
+                                    context.mainLooper
+                                )
+
+                                // timeout بعد 10 ثواني
+                                Handler(context.mainLooper).postDelayed({
+                                    isGettingLocation = false
+                                    fused.removeLocationUpdates(locationCallback)
+                                }, 10000)
+
+                            } catch (e: SecurityException) {
+                                isGettingLocation = false
+                                // معالجة خطأ الصلاحيات
+                            }
                         }
                     }
                 },
-                modifier = Modifier.weight(1f) // ياخد مساحة كويسة
+                enabled = !isGettingLocation,
+                modifier = Modifier.weight(1f)
             ) {
-                Text(stringResource(R.string.GetMyLocation))
+                if (isGettingLocation) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("جاري التحديد...")
+                } else {
+                    Text(stringResource(R.string.GetMyLocation))
+                }
+            }*/
+
+            // زر جلب الموقع الحالي
+            // استخدام الزر المحسن
+            /*GetLocationButton(
+                context = context,
+                viewModel = viewModel,
+                onLocationUpdate = { geoPoint ->
+                    onMapClick(geoPoint)
+                },
+                modifier = Modifier.weight(1f)
+            )*/
+
+            Column(modifier = Modifier.weight(1f)) {
+                LocationButton(
+                    context = context,
+                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -286,7 +385,6 @@ private fun PrayerTimesViews(
                     text = addressText,
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
-
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
@@ -557,7 +655,11 @@ fun PrayerTimesMapView(viewModel: PrayerTimeViewModel, onMapClick: (GeoPoint) ->
                     .fillMaxWidth()
                     .height(280.dp),
                 currentLocation = (mapState as MapUiState.Success).location,
-                onMapClick = onMapClick
+                onMapClick = { geoPoint ->
+                    // 🔥 تأكد أن هذا يستدعي updateLocation أيضاً
+                    viewModel.updateLocation(geoPoint)
+                    viewModel.updateAddressFromGeoPoint(geoPoint)
+                }
             )
         }
     }
@@ -675,5 +777,387 @@ internal fun PrayerTimeListItem(
             )
         }
         PrimaryColorDivider(horizontalPadding = 10.dp)
+    }
+}
+
+@SuppressLint("MissingPermission")
+@Composable
+private fun GetLocationButton(
+    context: Context,
+    viewModel: PrayerTimeViewModel,
+    onLocationUpdate: (GeoPoint) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isLoading by remember { mutableStateOf(false) }
+    var locationError by remember { mutableStateOf<String?>(null) }
+
+    Button(
+        onClick = {
+            isLoading = true
+            locationError = null
+
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+            // إعدادات طلب الموقع
+            val locationRequest = LocationRequest.Builder(
+                Priority.PRIORITY_HIGH_ACCURACY, 10000L
+            ).apply {
+                setMinUpdateIntervalMillis(5000L)
+                setMaxUpdateDelayMillis(15000L)
+            }.build()
+
+            // callback لاستقبال الموقع
+            val locationCallback = object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    isLoading = false
+                    locationResult.lastLocation?.let { location ->
+                        val geoPoint = GeoPoint(location.latitude, location.longitude)
+                        onLocationUpdate(geoPoint)
+                        viewModel.updateAddressFromGeoPoint(geoPoint)
+
+                        // إيقاف تحديثات الموقع بعد الحصول على النتيجة
+                        fusedLocationClient.removeLocationUpdates(this)
+                    } ?: run {
+                        locationError = "فشل في تحديد الموقع"
+                    }
+                }
+
+                override fun onLocationAvailability(availability: LocationAvailability) {
+                    if (!availability.isLocationAvailable) {
+                        isLoading = false
+                        locationError = "خدمة الموقع غير متاحة"
+                        fusedLocationClient.removeLocationUpdates(this)
+                    }
+                }
+            }
+
+            try {
+                // محاولة الحصول على آخر موقع محفوظ أولاً
+                fusedLocationClient.lastLocation.addOnCompleteListener { task ->
+                    if (task.isSuccessful && task.result != null) {
+                        val location = task.result
+                        val geoPoint = GeoPoint(location.latitude, location.longitude)
+
+                        // فحص عمر الموقع (إذا كان أقل من 5 دقائق استخدمه)
+                        val locationAge = System.currentTimeMillis() - location.time
+                        if (locationAge < 5 * 60 * 1000) { // 5 دقائق
+                            isLoading = false
+                            onLocationUpdate(geoPoint)
+                            viewModel.updateAddressFromGeoPoint(geoPoint)
+                        } else {
+                            // الموقع قديم، طلب موقع جديد
+                            fusedLocationClient.requestLocationUpdates(
+                                locationRequest,
+                                locationCallback,
+                                context.mainLooper
+                            )
+
+                            // إيقاف الطلب بعد 15 ثانية لتجنب البطء
+                            Handler(context.mainLooper).postDelayed({
+                                if (isLoading) {
+                                    isLoading = false
+                                    locationError = "انتهت مهلة انتظار الموقع"
+                                    fusedLocationClient.removeLocationUpdates(locationCallback)
+                                }
+                            }, 15000)
+                        }
+                    } else {
+                        // لا يوجد موقع محفوظ، طلب موقع جديد
+                        fusedLocationClient.requestLocationUpdates(
+                            locationRequest,
+                            locationCallback,
+                            context.mainLooper
+                        )
+
+                        // إيقاف الطلب بعد 15 ثانية
+                        Handler(context.mainLooper).postDelayed({
+                            if (isLoading) {
+                                isLoading = false
+                                locationError = "انتهت مهلة انتظار الموقع"
+                                fusedLocationClient.removeLocationUpdates(locationCallback)
+                            }
+                        }, 15000)
+                    }
+                }
+            } catch (e: SecurityException) {
+                isLoading = false
+                locationError = "لا توجد صلاحية للوصول للموقع"
+            }
+        },
+        enabled = !isLoading,
+        modifier = modifier
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(16.dp),
+                strokeWidth = 2.dp,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("جاري التحديد...")
+        } else {
+            Icon(
+                  imageVector = Icons.Default.MyLocation,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(R.string.GetMyLocation))
+        }
+    }
+
+    // عرض رسالة الخطأ إن وجدت
+    locationError?.let { error ->
+        LaunchedEffect(error) {
+            delay(3000)
+            locationError = null
+        }
+        Text(
+            text = error,
+            color = Color.Red,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+    }
+}
+
+@SuppressLint("MissingPermission", "ServiceCast")
+@Composable
+fun LocationButton(
+    context: Context,
+    viewModel: PrayerTimeViewModel,
+    modifier: Modifier = Modifier
+) {
+    var isGettingLocation by remember { mutableStateOf(false) }
+    var showPermissionDialog by remember { mutableStateOf(false) }
+    var showLocationSettingsDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // فحص الصلاحيات
+    val hasLocationPermission = remember(context) {
+        ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    // فحص تفعيل الموقع
+    val isLocationEnabled = remember(context) {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    // طلب الصلاحيات
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        if (fineLocationGranted || coarseLocationGranted) {
+            // تم منح الصلاحية، فحص تفعيل الموقع
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                // كله تمام، جلب الموقع
+                getCurrentLocation(context, viewModel) { loading, error ->
+                    isGettingLocation = loading
+                    errorMessage = error
+                }
+            } else {
+                showLocationSettingsDialog = true
+            }
+        } else {
+            errorMessage = "يجب السماح بصلاحية الموقع لاستخدام هذه الخاصية"
+        }
+    }
+
+    Button(
+        onClick = {
+            errorMessage = null
+            when {
+                !hasLocationPermission -> {
+                    permissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }
+                !isLocationEnabled -> {
+                    showLocationSettingsDialog = true
+                }
+                else -> {
+                    getCurrentLocation(context, viewModel) { loading, error ->
+                        isGettingLocation = loading
+                        errorMessage = error
+                    }
+                }
+            }
+        },
+        enabled = !isGettingLocation,
+        modifier = modifier
+    ) {
+        if (isGettingLocation) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(16.dp),
+                strokeWidth = 2.dp,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("جاري التحديد...")
+        } else {
+            Icon(
+                imageVector = Icons.Default.MyLocation,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(R.string.GetMyLocation))
+        }
+    }
+
+    // إظهار رسالة الخطأ
+    errorMessage?.let { error ->
+        LaunchedEffect(error) {
+            delay(4000)
+            errorMessage = null
+        }
+        Text(
+            text = error,
+            color = MaterialTheme.colorScheme.error,
+            fontSize = 12.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+            textAlign = TextAlign.Center
+        )
+    }
+
+    // حوار طلب الصلاحيات
+    if (showPermissionDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermissionDialog = false },
+            title = { Text("صلاحية الموقع") },
+            text = { Text("يحتاج التطبيق لصلاحية الوصول للموقع لتحديد موقعك الحالي وعرض مواقيت الصلاة المناسبة") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showPermissionDialog = false
+                    permissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }) {
+                    Text("موافق")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermissionDialog = false }) {
+                    Text("إلغاء")
+                }
+            }
+        )
+    }
+
+    // حوار تفعيل الموقع
+    if (showLocationSettingsDialog) {
+        AlertDialog(
+            onDismissRequest = { showLocationSettingsDialog = false },
+            title = { Text("تفعيل خدمة الموقع") },
+            text = { Text("يرجى تفعيل خدمة الموقع في الإعدادات لتتمكن من استخدام هذه الخاصية") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showLocationSettingsDialog = false
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    context.startActivity(intent)
+                }) {
+                    Text("فتح الإعدادات")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLocationSettingsDialog = false }) {
+                    Text("إلغاء")
+                }
+            }
+        )
+    }
+}
+
+@SuppressLint("MissingPermission")
+private fun getCurrentLocation(
+    context: Context,
+    viewModel: PrayerTimeViewModel,
+    onResult: (loading: Boolean, error: String?) -> Unit
+) {
+    onResult(true, null)
+
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+    // إعدادات طلب الموقع
+    val locationRequest = LocationRequest.Builder(
+        Priority.PRIORITY_HIGH_ACCURACY, 5000L
+    ).apply {
+        setMinUpdateIntervalMillis(2000L)
+        setMaxUpdateDelayMillis(10000L)
+    }.build()
+
+    val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            onResult(false, null)
+            locationResult.lastLocation?.let { location ->
+                val geoPoint = GeoPoint(location.latitude, location.longitude)
+                viewModel.updateLocation(geoPoint)
+                viewModel.updateAddressFromGeoPoint(geoPoint)
+            }
+            fusedLocationClient.removeLocationUpdates(this)
+        }
+
+        override fun onLocationAvailability(availability: LocationAvailability) {
+            if (!availability.isLocationAvailable) {
+                onResult(false, "خدمة الموقع غير متاحة حالياً")
+                fusedLocationClient.removeLocationUpdates(this)
+            }
+        }
+    }
+
+    try {
+        // محاولة الحصول على آخر موقع أولاً
+        fusedLocationClient.lastLocation.addOnCompleteListener { task ->
+            if (task.isSuccessful && task.result != null) {
+                val location = task.result
+                val locationAge = System.currentTimeMillis() - location.time
+
+                // إذا كان الموقع أقل من دقيقتين استخدمه
+                if (locationAge < 2 * 60 * 1000) {
+                    onResult(false, null)
+                    val geoPoint = GeoPoint(location.latitude, location.longitude)
+                    viewModel.updateLocation(geoPoint)
+                    viewModel.updateAddressFromGeoPoint(geoPoint)
+                    return@addOnCompleteListener
+                }
+            }
+
+            // الموقع المحفوظ قديم أو غير موجود، اطلب موقع جديد
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                context.mainLooper
+            )
+
+            // timeout بعد 15 ثانية
+            Handler(context.mainLooper).postDelayed({
+                onResult(false, "انتهت مهلة انتظار الموقع، جرب مرة أخرى")
+                fusedLocationClient.removeLocationUpdates(locationCallback)
+            }, 15000)
+        }
+    } catch (e: SecurityException) {
+        onResult(false, "خطأ في الصلاحيات")
+    } catch (e: Exception) {
+        onResult(false, "خطأ في تحديد الموقع")
     }
 }

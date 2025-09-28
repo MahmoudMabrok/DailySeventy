@@ -38,8 +38,8 @@ class IslamicReminderManager(private val context: Context) {
     private fun calculateInitialDelay(): Long {
         val now = System.currentTimeMillis()
         val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 21) // 8 صباحاً
-            set(Calendar.MINUTE, 0)
+            set(Calendar.HOUR_OF_DAY, 22) // 8 صباحاً
+            set(Calendar.MINUTE, 15)
             set(Calendar.SECOND, 0)
             if (timeInMillis <= now) {
                 add(Calendar.DAY_OF_MONTH, 1)

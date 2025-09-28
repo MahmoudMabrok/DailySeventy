@@ -16,6 +16,8 @@ import com.elsharif.dailyseventy.domain.AppPreferences
 import com.elsharif.dailyseventy.ui.theme.DailySeventyTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import androidx.glance.LocalContext
+
 
 private const val TAG = "QuranKhatmaWidgetReceiv"
 
@@ -39,14 +41,14 @@ object QuranKhatmaWidget : GlanceAppWidget() {
                 .map { it.map { it.aya }.joinToString("") { aya -> aya.ayaText } }
                 .collectAsState("")
 
-            DailySeventyTheme(isDarkSystem) {
+            //DailySeventyTheme(isDarkSystem) {
                 QuranKhatmaWidgetStateless(
                     soraName = soraName,
                     quranBody = quranBody,
                     onNextClickedClass = NextQuranPageAction::class.java,
                     onPreviousClickedClass = PreviousQuranPageAction::class.java,
                 )
-            }
+           // }
         }
 
     }
