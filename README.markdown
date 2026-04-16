@@ -84,6 +84,11 @@
 - **Desugaring**: For Java 8+ API compatibility on older Android versions.
 - **SharedPreferences**: For storing user settings (e.g., theme, language, Azan preferences).
 
+- 🌳 **Tree of Dhikr (شجرة الذكر)**: Grow your tree as you continue your dhikr.
+- 🌊 **Ocean of Dhikr (بحر الذكر)**: A calm and immersive tasbih experience.
+- 🌿 **Garden of Remembrance (روضة الذاكرين)**: A peaceful environment for daily adhkar.
+
+
 ### Modularization
 - The app follows a modular architecture with:
   - **Use Cases**: Encapsulate business logic (e.g., `azan`, `dailyazkar`).
