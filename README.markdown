@@ -52,6 +52,12 @@
   - Stores prayer times, adhkar, and tasbih data for offline access.
 - **Permissions**:
   - Requests permissions for location, notifications, motion/light sensors, and boot completion.
+- 🌳 **Tree of Dhikr (شجرة الذكر)**: Grow your tree as you continue your dhikr.
+- 🌊 **Ocean of Dhikr (بحر الذكر)**: A calm and immersive tasbih experience.
+- 🌿 **Garden of Remembrance (روضة الذاكرين)**: A peaceful environment for daily adhkar.
+
+
+
 
 ## Home Screen Layout
 - Displays prayer times and the next prayer.
@@ -83,10 +89,6 @@
 - **Extended Icons**: For enhanced iconography in the UI.
 - **Desugaring**: For Java 8+ API compatibility on older Android versions.
 - **SharedPreferences**: For storing user settings (e.g., theme, language, Azan preferences).
-
-- 🌳 **Tree of Dhikr (شجرة الذكر)**: Grow your tree as you continue your dhikr.
-- 🌊 **Ocean of Dhikr (بحر الذكر)**: A calm and immersive tasbih experience.
-- 🌿 **Garden of Remembrance (روضة الذاكرين)**: A peaceful environment for daily adhkar.
 
 
 ### Modularization
